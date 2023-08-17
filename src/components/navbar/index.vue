@@ -4,13 +4,17 @@
       <a-space>
         <img
           alt="logo"
-          src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
+          style="height: 38px"
+          :src="
+            logo ||
+            'https://static.sunyur.com/fe-home/pages/libs/images/logo.png'
+          "
         />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Sunyue Xiaolv
+          <div class="paltform-name"> Sunyue Xiaolv 平台 </div>
         </a-typography-title>
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
@@ -203,6 +207,7 @@
   import Menu from '@/components/menu/index.vue';
   import MessageBox from '../message-box/index.vue';
   import defaultAvatar from '@/assets/images/default-avatar.png';
+  import logo from '@/assets/images/xiaolv.svg?url';
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -264,6 +269,10 @@
 </script>
 
 <style scoped lang="less">
+  .paltform-name {
+    color: rgb(var(--arcoblue-6));
+    font-weight: 600;
+  }
   .navbar {
     display: flex;
     justify-content: space-between;

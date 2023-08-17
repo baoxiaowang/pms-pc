@@ -47,3 +47,11 @@ export function getTaskById(projectId: string) {
     },
   });
 }
+
+export function deleteTaskById(taskId: string) {
+  return axios.get('/api/task/deleteById', {
+    params: {
+      taskId,
+    },
+  });
+}

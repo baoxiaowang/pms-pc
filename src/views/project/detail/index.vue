@@ -127,14 +127,20 @@
                 </template>
               </a-table-column>
               <a-table-column title="创建时间" data-index="updateTime" />
-              <a-table-column title="操作" align="right">
+              <a-table-column title="操作" :width="120" align="right">
                 <template #cell="{ record }">
+                  <a-button type="text" @click="goTaskDetail(record._id)">
+                    查看
+                  </a-button>
                   <a-button type="text" @click="updateTask(record)">
                     编辑
                   </a-button>
-                  <a-button type="text" @click="goTaskDetail(record._id)">
-                    {{ $t('basicProfile.cell.view') }}
-                  </a-button>
+                  <a-popconfirm
+                    content="确定要删除改任务吗 ?"
+                    @ok="deleteTask(record)"
+                  >
+                    <a-button type="text" status="danger"> 删除 </a-button>
+                  </a-popconfirm>
                 </template>
               </a-table-column>
             </template>
@@ -146,7 +152,7 @@
   <!-- 项目涉及代码仓库 -->
   <a-modal
     v-model:visible="codeStoreModalVisible"
-    title="Modal Form"
+    title="项目代码仓库"
     @ok="sendCreateCodeStoreModal"
   >
     <a-form :model="codeStoreForm" label-align="left">
@@ -156,7 +162,7 @@
         field="storeName"
         label="仓库名称"
       >
-        <a-select v-model="codeStoreForm.storeName">
+        <a-select v-model="codeStoreForm.storeName" placeholder="请选择">
           <a-option
             v-for="store in codeStoreDictList"
             :key="store._id"
@@ -172,7 +178,10 @@
         field="storeAddress"
         label="仓库地址"
       >
-        <a-input v-model:model-value="codeStoreForm.storeAddress"></a-input>
+        <a-input
+          v-model:model-value="codeStoreForm.storeAddress"
+          placeholder="请输入仓库地址"
+        ></a-input>
       </a-form-item>
       <a-form-item
         asterisk-position="end"
@@ -180,7 +189,10 @@
         field="mainBranch"
         label="主分支名"
       >
-        <a-input v-model:model-value="codeStoreForm.mainBranch"></a-input>
+        <a-input
+          v-model:model-value="codeStoreForm.mainBranch"
+          placeholder="请输入主分支"
+        ></a-input>
       </a-form-item>
       <a-form-item
         asterisk-position="end"
@@ -188,10 +200,16 @@
         field="nodeVersion"
         label="node 版本"
       >
-        <a-input v-model:model-value="codeStoreForm.nodeVersion"></a-input>
+        <a-input
+          v-model:model-value="codeStoreForm.nodeVersion"
+          placeholder="请输入 node 兼容版本"
+        ></a-input>
       </a-form-item>
       <a-form-item asterisk-position="end" field="remark" label="项目备注">
-        <a-textarea v-model:model-value="codeStoreForm.remark"></a-textarea>
+        <a-textarea
+          v-model:model-value="codeStoreForm.remark"
+          placeholder="请输入备注"
+        ></a-textarea>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -278,7 +296,12 @@
   import { getCodeStore } from '@/api/codeStore';
   import { getMemberByPage } from '@/api/member';
   import { getProjectById, addCodeStoreById } from '@/api/project';
-  import { getTaskByPage, createTask, updateTaskById } from '@/api/task';
+  import {
+    getTaskByPage,
+    createTask,
+    updateTaskById,
+    deleteTaskById,
+  } from '@/api/task';
   import router from '@/router';
   import { onBeforeMount, ref, reactive } from 'vue';
   import { useRoute } from 'vue-router';
@@ -411,6 +434,11 @@
     fetchTaskList();
   };
 
+  async function deleteTask(row: any) {
+    // eslint-disable-next-line no-underscore-dangle
+    await deleteTaskById(row._id);
+    fetchTaskList();
+  }
   function goTaskDetail(taskId: string) {
     router.push({
       name: 'projectTask',

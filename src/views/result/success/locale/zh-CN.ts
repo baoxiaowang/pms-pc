@@ -3,7 +3,7 @@ export default {
   'success.result.title': '提交成功',
   'success.result.subTitle': '表单提交成功！',
   'success.result.printResult': '打印结果',
-  'success.result.projectList': '返回项目列表',
+  'success.result.projectList': '返回项目集合',
   'success.result.progress': '当前进度',
   'success.submitApplication': '提交申请',
   'success.leaderReview': '直属领导审核',

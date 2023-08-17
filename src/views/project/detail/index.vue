@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['项目列表', projectDetail.name || '']" />
+    <Breadcrumb :items="['项目集合', projectDetail.name || '']" />
     <a-space direction="vertical" :size="16" fill>
       <a-card class="general-card" title="项目详情">
         <template #extra>
@@ -12,19 +12,30 @@
           <a-row>
             <a-col :span="2">项目名称: </a-col>
             <a-col :span="8">
-              <a-tag> {{ projectDetail.name }} </a-tag>
+              <a-tag color="#ff7d00">
+                {{ projectDetail.name }}
+              </a-tag>
             </a-col>
           </a-row>
           <a-row>
             <a-col :span="2">项目 pm: </a-col>
             <a-col :span="8">
-              <a-tag> {{ projectDetail.pmMember?.name }} </a-tag>
+              <!-- <a-tag> {{ projectDetail.pmMember?.name }} </a-tag> -->
+              <UserTag
+                :id="projectDetail.pmMember?.id"
+                :name="projectDetail.pmMember?.name"
+              ></UserTag>
             </a-col>
           </a-row>
           <a-row>
             <a-col :span="2">前端负责人: </a-col>
             <a-col :span="8">
-              <a-tag> {{ projectDetail.feMember?.name }} </a-tag>
+              <!-- <a-tag> {{ projectDetail.feMember?.name }} </a-tag> -->
+              <UserTag
+                :id="projectDetail.feMember?.id"
+                :name="projectDetail.feMember?.name"
+              >
+              </UserTag>
             </a-col>
           </a-row>
           <a-row>

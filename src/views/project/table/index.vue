@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['menu.list', '项目详情']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
+    <a-card class="general-card" title="项目集合">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -12,10 +12,7 @@
           >
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item
-                  field="number"
-                  :label="$t('searchTable.form.number')"
-                >
+                <a-form-item field="number" label="项目名称">
                   <a-input
                     v-model="formModel.number"
                     :placeholder="$t('searchTable.form.number.placeholder')"
@@ -23,7 +20,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="name" :label="$t('searchTable.form.name')">
+                <a-form-item field="pmUser" label="PM">
                   <a-input
                     v-model="formModel.name"
                     :placeholder="$t('searchTable.form.name.placeholder')"
@@ -31,10 +28,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="contentType"
-                  :label="$t('searchTable.form.contentType')"
-                >
+                <a-form-item field="contentType" label="前端负责人">
                   <a-select
                     v-model="formModel.contentType"
                     :options="contentTypeOptions"
@@ -43,10 +37,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="filterType"
-                  :label="$t('searchTable.form.filterType')"
-                >
+                <a-form-item field="filterType" label="后端负责人">
                   <a-select
                     v-model="formModel.filterType"
                     :options="filterTypeOptions"
@@ -55,10 +46,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="createdTime"
-                  :label="$t('searchTable.form.createdTime')"
-                >
+                <a-form-item field="createdTime" label="创建时间">
                   <a-range-picker
                     v-model="formModel.createdTime"
                     style="width: 100%"
@@ -297,7 +285,7 @@
   import { computed, ref, reactive, watch, nextTick, onBeforeMount } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
+  import { PolicyRecord, PolicyParams } from '@/api/list';
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';

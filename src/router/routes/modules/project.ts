@@ -27,9 +27,9 @@ const project: AppRouteRecordRaw = {
     {
       path: 'list',
       name: 'projectList',
-      component: () => import('@/views/project/search-table/index.vue'),
+      component: () => import('@/views/project/table/index.vue'),
       meta: {
-        locale: '项目列表',
+        locale: '项目集合',
         requiresAuth: true,
         roles: ['*'],
       },

@@ -30,7 +30,6 @@
           <a-row>
             <a-col :span="2">前端负责人: </a-col>
             <a-col :span="8">
-              <!-- <a-tag> {{ projectDetail.feMember?.name }} </a-tag> -->
               <UserTag
                 :id="projectDetail.feMember?.id"
                 :name="projectDetail.feMember?.name"
@@ -56,7 +55,7 @@
           <a-col
             v-for="store in projectDetail.codeStoreList"
             :key="store.name"
-            :span="6"
+            :span="8"
           >
             <a-space direction="vertical" fill>
               <div>仓库名：{{ store.storeName }}</div>

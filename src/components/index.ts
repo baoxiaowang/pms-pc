@@ -12,6 +12,10 @@ import {
 import Chart from './chart/index.vue';
 import Breadcrumb from './breadcrumb/index.vue';
 import UserTag from '@/components/user-tag/index.vue';
+import UserSelect from '@/components/user-select/index.vue';
+
+import { Calendar, ConfigProvider } from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css';
 
 // Manually introduce ECharts modules to reduce packing size
 
@@ -33,5 +37,8 @@ export default {
     Vue.component('Chart', Chart);
     Vue.component('Breadcrumb', Breadcrumb);
     Vue.component('UserTag', UserTag);
+    Vue.component('AntCalendar', Calendar);
+    Vue.component('AntConfigProvider', ConfigProvider);
+    Vue.component('UserSelect', UserSelect);
   },
 };

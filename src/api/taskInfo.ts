@@ -6,6 +6,7 @@ export function createTaskInfo(data: {
   name: string;
   time: number;
   desc: string;
+  implementer: string;
   status?: 'todo' | 'doing' | 'done';
 }) {
   return axios.post('/api/taskInfo/add', {

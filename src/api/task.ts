@@ -48,10 +48,36 @@ export function getTaskById(projectId: string) {
   });
 }
 
+export function getByDevId(devId: string) {
+  return axios.get('/api/task/getByDevId', {
+    params: {
+      devId,
+    },
+  });
+}
+
 export function deleteTaskById(taskId: string) {
   return axios.get('/api/task/deleteById', {
     params: {
       taskId,
     },
+  });
+}
+
+export function pmConfirmed(taskId: string) {
+  return axios.post('/api/task/pmConfirmed', {
+    taskId,
+  });
+}
+
+export function startDev(taskId: string) {
+  return axios.post('/api/task/startDev', {
+    taskId,
+  });
+}
+
+export function devDone(taskId: string) {
+  return axios.post('/api/task/devDone', {
+    taskId,
   });
 }

@@ -6,7 +6,7 @@ const USER: AppRouteRecordRaw = {
   name: 'dict',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: '字典管理',
+    locale: '数据字典',
     icon: 'icon-tool',
     requiresAuth: true,
     order: 10,

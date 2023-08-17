@@ -5,7 +5,7 @@
     </template>
     <a-row :gutter="16">
       <a-col
-        v-for="(project, index) in projectList"
+        v-for="(project, index) in myProjectList"
         :key="index"
         :xs="12"
         :sm="12"
@@ -15,7 +15,8 @@
         :xxl="8"
         class="my-project-item"
       >
-        <a-card>
+        <projectCard :project="project"></projectCard>
+        <!-- <a-card>
           <a-skeleton v-if="loading" :loading="loading" :animation="true">
             <a-skeleton-line :rows="3" />
           </a-skeleton>
@@ -40,21 +41,58 @@
               </a-typography-text>
             </a-space>
           </a-space>
-        </a-card>
+        </a-card> -->
       </a-col>
     </a-row>
   </a-card>
 </template>
 
 <script lang="ts" setup>
+  import { getProjectPageList } from '@/api/project';
   import { queryMyProjectList, MyProjectRecord } from '@/api/user-center';
   import useRequest from '@/hooks/request';
+  import projectCard from '@/views/project/card/components/project-card.vue';
+  import { computed, onBeforeMount, ref } from 'vue';
 
   const defaultValue = Array(6).fill({} as MyProjectRecord);
   const { loading, response: projectList } = useRequest<MyProjectRecord[]>(
     queryMyProjectList,
     defaultValue
   );
+
+  const list = ref<any[]>([]);
+
+  async function fetchProjectList() {
+    const { data } = await getProjectPageList();
+    list.value = data.list;
+  }
+
+  const myProjectList = computed<any>(() => {
+    const owner: any[] = [];
+    const dev: any[] = [];
+    const other: any[] = [];
+    list.value.forEach((item: any) => {
+      const { taskList } = item;
+      const ownerPro = item.pmUser === '鲍小旺';
+      const devPro = taskList.some((task: any) =>
+        task.feUserList?.includes('64dc865f98fc973190f89bd4')
+      );
+      if (ownerPro) {
+        owner.push(item);
+      }
+      if (devPro) {
+        dev.push(item);
+      }
+      if (!ownerPro && !devPro) {
+        other.push(item);
+      }
+    });
+    return [...owner, ...dev];
+  });
+
+  onBeforeMount(() => {
+    fetchProjectList();
+  });
 </script>
 
 <style scoped lang="less">

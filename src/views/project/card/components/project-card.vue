@@ -5,7 +5,7 @@
         <a-col :span="7">项目 pm:</a-col>
         <a-col :span="5">
           <UserTag
-            :id="project.pmMember._id"
+            :id="project.pmMember?._id"
             :name="project.pmMember?.name"
           ></UserTag>
         </a-col>

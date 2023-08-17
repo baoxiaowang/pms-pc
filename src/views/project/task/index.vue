@@ -17,8 +17,26 @@
         <template #extra>
           <a-space>
             <a-button>转 交</a-button>
-            <a-button type="outline">开始开发</a-button>
-            <a-button type="primary">开发完成</a-button>
+            <a-button v-if="needPmConfirm" type="outline" @click="pmConfirm">
+              PM 确认
+            </a-button>
+            <a-popconfirm
+              content="确认开始开发后，需求会从当前开始计算完成时间，请确认?"
+              position="rt"
+              @ok="startDevClick"
+            >
+              <a-button v-if="!taskDetail.devStarting" type="outline">
+                开始开发
+              </a-button>
+            </a-popconfirm>
+
+            <a-button
+              v-if="taskDetail.devStarting"
+              type="primary"
+              @click="devDoneClick"
+            >
+              开发完成
+            </a-button>
             <a-button type="primary">上线完成</a-button>
           </a-space>
         </template>
@@ -70,18 +88,56 @@
               @add="(arg) => taskInfoChange(arg, item as any)"
             >
               <template #item="{ element: item }">
-                <div class="task-info-item">
+                <div
+                  v-if="currentCheckImplementer.includes(item.implementer)"
+                  class="task-info-item"
+                >
                   <div class="task-info-item-left">
-                    <div class="task-info-name"> {{ item.name }} </div>
+                    <div class="task-info-name">
+                      {{ item.name }}
+                      <a-tag
+                        :color="
+                          item.confirmed
+                            ? 'rgb(var(--green-6))'
+                            : 'rgb(var(--orange-6))'
+                        "
+                        size="small"
+                      >
+                        {{ item.confirmed ? '已确认' : '未确认' }}
+                      </a-tag>
+                    </div>
                     <div class="task-info-desc"> {{ item.desc }}</div>
                   </div>
                   <div class="task-info-item-right">
                     <div class="task-info-item-time"> {{ item.time }}h </div>
+                    <div class="">
+                      <UserTag
+                        :id="item.implementerInfo.id"
+                        :name="item.implementerInfo.name"
+                      ></UserTag>
+                    </div>
                   </div>
                 </div>
               </template>
             </VueDraggable>
             <!-- </div> -->
+          </div>
+          <div class="task-todo-list">
+            <div class="task-info-header"> 执行人 </div>
+            <div class="task-info-body">
+              <a-checkbox-group
+                v-model="currentCheckImplementer"
+                direction="vertical"
+              >
+                <a-checkbox
+                  v-for="member in implementerList"
+                  :key="member.id"
+                  :value="member.id"
+                >
+                  {{ member.name }}</a-checkbox
+                >
+              </a-checkbox-group>
+            </div>
           </div>
         </div>
       </a-card>
@@ -94,12 +150,13 @@
   >
     <a-form auto-label-width :model="taskInfoForm" label-align="left">
       <a-form-item asterisk-position="end" required field="name" label="名称">
-        <a-input v-model="taskInfoForm.name" />
+        <a-input v-model="taskInfoForm.name" placeholder="请输入" />
       </a-form-item>
 
       <a-form-item asterisk-position="end" required field="time" label="时间">
         <a-input-number
           v-model="taskInfoForm.time"
+          placeholder="请输入"
           :max="8"
           :min="0.5"
           mode="button"
@@ -109,8 +166,19 @@
           <template #suffix> h </template>
         </a-input-number>
       </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="implementer"
+        label="执行人"
+      >
+        <user-select v-model="taskInfoForm.implementer"> </user-select>
+      </a-form-item>
       <a-form-item field="desc" label="备注">
-        <a-textarea v-model="taskInfoForm.desc"></a-textarea>
+        <a-textarea
+          v-model="taskInfoForm.desc"
+          placeholder="请输入"
+        ></a-textarea>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -118,12 +186,14 @@
 
 <script setup lang="ts">
   //
-  import { getTaskById } from '@/api/task';
+  import { devDone, getTaskById, pmConfirmed, startDev } from '@/api/task';
   import {
     createTaskInfo,
     getTaskInfoByTaskId,
     updateTaskInfoById,
   } from '@/api/taskInfo';
+  import { Message, Modal } from '@arco-design/web-vue';
+  import { arrayType } from 'ant-design-vue/es/_util/type';
   import { watch, computed, reactive, onBeforeMount, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import VueDraggable from 'vuedraggable';
@@ -136,23 +206,48 @@
     done: [],
   });
 
+  const currentCheckImplementer = ref<string[]>([]);
+
   const taskDetail = ref<any>({});
   const taskInfoModalVisible = ref(false);
   const taskInfoList = ref<any[]>([]);
+
+  const needPmConfirm = computed(() => {
+    return taskInfoList.value.some((item) => !item.confirmed);
+  });
+
+  const implementerList = computed(() => {
+    return taskInfoList.value.reduce(
+      ({ list, map }, item) => {
+        const { implementerInfo } = item;
+        if (!map[implementerInfo.id]) {
+          map[implementerInfo.id] = implementerInfo;
+          list.push(implementerInfo);
+        }
+        return { list, map };
+      },
+      { list: [], map: {} }
+    ).list;
+  });
 
   watch(taskInfoList, (val = []) => {
     const todo: any[] = [];
     const doing: any[] = [];
     const done: any[] = [];
-    val.forEach((item) => {
-      if (item.status === 'done') {
-        done.push(item);
-      } else if (item.status === 'doing') {
-        doing.push(item);
-      } else {
-        todo.push(item);
-      }
-    });
+    currentCheckImplementer.value = val.map((item) => item.implementer);
+    val
+      .filter((item) =>
+        currentCheckImplementer.value.includes(item.implementer as string)
+      )
+      .forEach((item) => {
+        if (item.status === 'done') {
+          done.push(item);
+        } else if (item.status === 'doing') {
+          doing.push(item);
+        } else {
+          todo.push(item);
+        }
+      });
     listMap.todo = todo;
     listMap.doing = doing;
     listMap.done = done;
@@ -163,6 +258,7 @@
     name: '',
     desc: '',
     time: 1,
+    implementer: '',
   });
 
   async function fetchTaskDetail() {
@@ -195,6 +291,30 @@
       status,
     });
   }
+
+  async function pmConfirm() {
+    // eslint-disable-next-line no-underscore-dangle
+    await pmConfirmed(taskDetail.value._id);
+    await fetchTaskInfoList();
+    Message.success('确认成功');
+  }
+  async function startDevClick() {
+    // eslint-disable-next-line no-underscore-dangle
+    await startDev(taskDetail.value._id);
+    await fetchTaskDetail();
+    Message.success('确认成功');
+  }
+  async function devDoneClick() {
+    Modal.confirm({
+      title: '开发完成确认',
+      content: '开发完成会自动完成所有任务明细，是否确认完成开发?',
+      async onOk() {
+        // eslint-disable-next-line no-underscore-dangle
+        await devDone(taskDetail.value._id);
+        await fetchTaskInfoList();
+      },
+    });
+  }
   onBeforeMount(() => {
     fetchTaskDetail();
     fetchTaskInfoList();
@@ -211,7 +331,7 @@
   }
   .task-info-detail {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr) 200px;
     min-height: calc(100% - 200px);
     column-gap: 20px;
   }
@@ -245,7 +365,8 @@
     margin-bottom: 10px;
     padding-left: 20px;
   }
-  .task-info-body {
+  .task-info-body,
+  .task-member-filter {
     flex: 1;
     border-radius: 6px;
     background-color: var(
@@ -253,10 +374,13 @@
     ); //rgba(#eee, 0.2); //var(--color-fill-2);
     padding: 10px;
   }
+  .task-member-filter-wrap {
+    height: 100%;
+  }
   .task-info-item {
     border-radius: 6px;
     padding: 10px 12px;
-    background-color: #e3e3e3;
+    background-color: #fff; // #e3e3e3;
     display: flex;
     margin-bottom: 10px;
     cursor: move;
@@ -264,16 +388,27 @@
       font-size: 16px;
       font-weight: 500;
       margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      .arco-tag {
+        margin-left: 10px;
+        font-size: 12px;
+      }
     }
     .task-info-item-left {
       flex: 1;
     }
     .task-info-item-right {
+      height: auto;
       padding: 0 10px;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      align-items: flex-end;
+      justify-content: space-between;
       height: 100%;
+      flex-direction: column;
+    }
+    .task-info-item-right {
+      height: auto;
     }
   }
   .task-title-block {

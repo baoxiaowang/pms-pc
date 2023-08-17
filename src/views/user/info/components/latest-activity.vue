@@ -1,14 +1,17 @@
 <template>
-  <a-card class="general-card" :title="$t('userInfo.title.latestActivity')">
+  <a-card class="general-card" title="我的任务">
     <template #extra>
-      <a-link>{{ $t('userInfo.viewAll') }}</a-link>
+      <a-link>查看全部</a-link>
     </template>
     <a-list :bordered="false">
       <a-list-item
-        v-for="activity in activityList"
-        :key="activity.id"
+        v-for="task in taskList"
+        :key="task.id"
         action-layout="horizontal"
       >
+        <template #actions>
+          <a-button type="text" @click="goTaskDetail(task._id)">查看</a-button>
+        </template>
         <a-skeleton
           v-if="loading"
           :loading="loading"
@@ -24,15 +27,39 @@
             </a-col>
           </a-row>
         </a-skeleton>
-        <a-list-item-meta
-          v-else
-          :title="activity.title"
-          :description="activity.description"
-        >
+        <a-list-item-meta v-else :title="task.name" :description="task.jira">
           <template #avatar>
-            <a-avatar>
-              <img :src="activity.avatar" />
-            </a-avatar>
+            <a-avatar> {{ task.projectInfo.name }} </a-avatar>
+          </template>
+          <template #description>
+            <a-space fill direction="vertical" size="mini">
+              <a-space fill>
+                <span :span="1">
+                  项目PM:
+                  <UserTag
+                    :id="task.projectInfo.pmMember?.id"
+                    :name="task.projectInfo.pmMember?.name"
+                  />
+                </span>
+                <span> 期望完成时间: {{ task.expectDate }} </span>
+              </a-space>
+              <a-space fill>
+                <span :span="1">prd: </span>
+                <span :span="20">
+                  <a-link icon target="_blank" :href="task.prd">
+                    {{ task.prd }}
+                  </a-link>
+                </span>
+              </a-space>
+              <a-space fill>
+                <span :span="1">jira: </span>
+                <span :span="20">
+                  <a-link icon target="_blank" :href="task.jira">
+                    {{ task.jira }}
+                  </a-link>
+                </span>
+              </a-space>
+            </a-space>
           </template>
         </a-list-item-meta>
       </a-list-item>
@@ -44,13 +71,18 @@
   import { ref } from 'vue';
   import { queryLatestActivity, LatestActivity } from '@/api/user-center';
   import useLoading from '@/hooks/loading';
+  import { getByDevId } from '@/api/task';
+  import { useUserStore } from '@/store';
+  import router from '@/router';
+
+  const userStore = useUserStore();
 
   const { loading, setLoading } = useLoading(true);
-  const activityList = ref<LatestActivity[]>(new Array(7).fill({}));
+  const taskList = ref<any[]>(new Array(7).fill({}));
   const fetchData = async () => {
     try {
-      const { data } = await queryLatestActivity();
-      activityList.value = data;
+      const { data } = await getByDevId((userStore as any).id);
+      taskList.value = data.list;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -58,6 +90,15 @@
     }
   };
   fetchData();
+
+  function goTaskDetail(taskId: string) {
+    router.push({
+      name: 'projectTask',
+      params: {
+        id: taskId,
+      },
+    });
+  }
 </script>
 
 <style scoped lang="less">

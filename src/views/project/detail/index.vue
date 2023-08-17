@@ -62,10 +62,12 @@
               <div>仓库名：{{ store.storeName }}</div>
               <!-- <div>{{ store.describe }}</div> -->
               <div>主分支：{{ store.mainBranch }}</div>
-              <div>
+              <div class="flex-v-center">
                 仓库地址：
                 <a-link
                   v-if="store.storeAddress"
+                  class="text-hidden"
+                  style="flex: 1; justify-content: flex-start"
                   :href="store.storeAddress"
                   icon
                 >

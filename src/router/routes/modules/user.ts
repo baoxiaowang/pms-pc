@@ -17,7 +17,7 @@ const USER: AppRouteRecordRaw = {
       name: 'Info',
       component: () => import('@/views/user/info/index.vue'),
       meta: {
-        locale: 'menu.user.info',
+        locale: '用户信息',
         requiresAuth: true,
         roles: ['*'],
       },
@@ -27,7 +27,17 @@ const USER: AppRouteRecordRaw = {
       name: 'Setting',
       component: () => import('@/views/user/setting/index.vue'),
       meta: {
-        locale: 'menu.user.setting',
+        locale: '信息设置',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'calendar',
+      name: 'Calendar',
+      component: () => import('@/views/user/calendar/index.vue'),
+      meta: {
+        locale: '我的日历',
         requiresAuth: true,
         roles: ['*'],
       },

@@ -4,12 +4,6 @@
       <a-row>
         <a-col :span="7">项目 pm:</a-col>
         <a-col :span="5">
-          <!-- <a-tag color="blue" size="small">
-            <template #icon>
-              <icon-user />
-            </template>
-            {{ project.pmMember?.name }}
-          </a-tag> -->
           <UserTag
             :id="project.pmMember._id"
             :name="project.pmMember?.name"
@@ -52,6 +46,9 @@
 
 <style lang="less" scoped>
   .project-card {
+    &:hover {
+      box-shadow: inset 0 0 0px 1px rgb(var(--primary-6));
+    }
     cursor: pointer;
     :deep(.arco-card-header) {
       border: none;

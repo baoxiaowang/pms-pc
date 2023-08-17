@@ -105,7 +105,8 @@
 
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
-          name: (redirect as string) || 'Workplace',
+          // name: (redirect as string) || 'Workplace',
+          path: (redirect as string) || '/',
           query: {
             ...othersQuery,
           },

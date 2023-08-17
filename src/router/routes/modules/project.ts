@@ -34,16 +34,16 @@ const project: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    {
-      path: 'task-list',
-      name: 'projectTaskList',
-      component: () => import('@/views/project/search-table/index.vue'),
-      meta: {
-        locale: '任务列表',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
+    // {
+    //   path: 'task-list',
+    //   name: 'projectTaskList',
+    //   component: () => import('@/views/project/search-table/index.vue'),
+    //   meta: {
+    //     locale: '任务列表',
+    //     requiresAuth: true,
+    //     roles: ['*'],
+    //   },
+    // },
     {
       path: 'detail/:id',
       name: 'projectDetail',

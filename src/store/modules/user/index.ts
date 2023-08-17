@@ -82,6 +82,7 @@ const useUserStore = defineStore('user', {
     // Logout
     async logout() {
       try {
+        clearToken();
         await userLogout();
       } finally {
         this.logoutCallBack();

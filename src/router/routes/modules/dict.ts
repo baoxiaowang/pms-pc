@@ -9,7 +9,7 @@ const USER: AppRouteRecordRaw = {
     locale: '字典管理',
     icon: 'icon-tool',
     requiresAuth: true,
-    order: 2,
+    order: 10,
   },
   children: [
     {

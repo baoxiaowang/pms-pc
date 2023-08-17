@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', '项目详情']" />
+    <Breadcrumb :items="['项目管理', '项目集合']" />
     <a-card class="general-card" title="项目集合">
       <a-row>
         <a-col :flex="1">
@@ -13,26 +13,20 @@
             <a-row :gutter="16">
               <a-col :span="8">
                 <a-form-item field="number" label="项目名称">
-                  <a-input
-                    v-model="formModel.number"
-                    :placeholder="$t('searchTable.form.number.placeholder')"
-                  />
+                  <a-input v-model="formModel.number" placeholder="请输入" />
                 </a-form-item>
               </a-col>
               <a-col :span="8">
                 <a-form-item field="pmUser" label="PM">
-                  <a-input
-                    v-model="formModel.name"
-                    :placeholder="$t('searchTable.form.name.placeholder')"
-                  />
+                  <a-input v-model="formModel.name" placeholder="请输入" />
                 </a-form-item>
               </a-col>
               <a-col :span="8">
                 <a-form-item field="contentType" label="前端负责人">
                   <a-select
                     v-model="formModel.contentType"
+                    placeholder="请选择"
                     :options="contentTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
                   />
                 </a-form-item>
               </a-col>
@@ -40,8 +34,8 @@
                 <a-form-item field="filterType" label="后端负责人">
                   <a-select
                     v-model="formModel.filterType"
+                    placeholder="请选择"
                     :options="filterTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
                   />
                 </a-form-item>
               </a-col>
@@ -54,14 +48,11 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="status"
-                  :label="$t('searchTable.form.status')"
-                >
+                <a-form-item field="status" label="状态">
                   <a-select
                     v-model="formModel.status"
+                    placeholder="请选择"
                     :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
                   />
                 </a-form-item>
               </a-col>
@@ -75,13 +66,13 @@
               <template #icon>
                 <icon-search />
               </template>
-              {{ $t('searchTable.form.search') }}
+              搜索
             </a-button>
             <a-button @click="reset">
               <template #icon>
                 <icon-refresh />
               </template>
-              {{ $t('searchTable.form.reset') }}
+              重置
             </a-button>
           </a-space>
         </a-col>
@@ -94,7 +85,7 @@
               <template #icon>
                 <icon-plus />
               </template>
-              {{ $t('searchTable.operation.create') }}
+              新建
             </a-button>
           </a-space>
         </a-col>
@@ -106,15 +97,15 @@
             <template #icon>
               <icon-download />
             </template>
-            {{ $t('searchTable.operation.download') }}
+            下载
           </a-button>
-          <a-tooltip :content="$t('searchTable.actions.refresh')">
+          <a-tooltip content="刷新">
             <div class="action-icon" @click="search"
               ><icon-refresh size="18"
             /></div>
           </a-tooltip>
           <a-dropdown @select="handleSelectDensity">
-            <a-tooltip :content="$t('searchTable.actions.density')">
+            <a-tooltip content="间距">
               <div class="action-icon"><icon-line-height size="18" /></div>
             </a-tooltip>
             <template #content>
@@ -128,7 +119,7 @@
               </a-doption>
             </template>
           </a-dropdown>
-          <a-tooltip :content="$t('searchTable.actions.columnSetting')">
+          <a-tooltip content="设置">
             <a-popover
               trigger="click"
               position="bl"
@@ -212,10 +203,16 @@
           {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
         </template>
         <template #pmUser="{ record }">
-          {{ record.pmMember?.name }}
+          <UserTag
+            :id="record.pmMember?.id"
+            :name="record.pmMember?.name"
+          ></UserTag>
         </template>
         <template #feUser="{ record }">
-          {{ record.feOwnerMember?.name }}
+          <UserTag
+            :id="record.feOwnerMember?.id"
+            :name="record.feOwnerMember?.name"
+          ></UserTag>
         </template>
         <template #status="{ record }">
           <span v-if="record.status === 'offline'" class="circle"></span>
@@ -237,15 +234,20 @@
   </div>
   <a-modal
     v-model:visible="projectModalVisible"
-    title="Modal Form"
+    title="新建项目"
     @ok="sendCreateModal"
   >
-    <a-form :model="projectForm" label-align="left">
-      <a-form-item required field="name" label="项目名称">
-        <a-input v-model="projectForm.name" />
+    <a-form auto-label-width :model="projectForm" label-align="left">
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="name"
+        label="项目名称"
+      >
+        <a-input v-model="projectForm.name" placeholder="请输入项目名称" />
       </a-form-item>
-      <a-form-item required field="pmUser" label="PM">
-        <a-select v-model="projectForm.pmUser">
+      <a-form-item asterisk-position="end" required field="pmUser" label="PM">
+        <a-select v-model="projectForm.pmUser" placeholder="请选择">
           <a-option
             v-for="member in memberList"
             :key="member._id"
@@ -256,7 +258,7 @@
         </a-select>
       </a-form-item>
       <a-form-item field="post" label="前端负责人">
-        <a-select v-model="projectForm.feUser">
+        <a-select v-model="projectForm.feUser" placeholder="请选择">
           <a-option
             v-for="member in memberList"
             :key="member._id"
@@ -267,7 +269,7 @@
         </a-select>
       </a-form-item>
       <a-form-item field="post" label="后端负责人">
-        <a-select v-model="projectForm.beUser">
+        <a-select v-model="projectForm.beUser" placeholder="请选择">
           <a-option
             v-for="member in memberList"
             :key="member._id"
@@ -276,6 +278,16 @@
             {{ member.name }}
           </a-option>
         </a-select>
+      </a-form-item>
+      <a-form-item field="name" label="项目环境配置">
+        <a-input
+          v-model="projectForm.envLink"
+          placeholder="vpn host 相关环境配置"
+        >
+          <template #suffix>
+            <icon-link />
+          </template>
+        </a-input>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -320,6 +332,7 @@
     pmUser: '',
     feUser: '',
     beUser: '',
+    envLink: '',
   });
 
   const size = ref<SizeProps>('medium');
@@ -351,7 +364,7 @@
   ]);
   const columns = computed<TableColumnData[]>(() => [
     {
-      title: t('searchTable.columns.index'),
+      title: '#',
       dataIndex: 'index',
       slotName: 'index',
     },
@@ -383,7 +396,7 @@
       dataIndex: 'createdTime',
     },
     {
-      title: t('searchTable.columns.operations'),
+      title: '操作',
       dataIndex: 'operations',
       slotName: 'operations',
     },

@@ -102,7 +102,7 @@
                   </a-tag>
                 </template>
               </a-table-column>
-              <a-table-column title="jira 地址" data-index="jira">
+              <a-table-column :width="220" title="jira 地址" data-index="jira">
                 <template #cell="{ record }">
                   <a-link
                     v-if="record.jira"
@@ -114,9 +114,24 @@
                   </a-link>
                 </template>
               </a-table-column>
-              <a-table-column title="创建时间" data-index="updateTime" />
-              <a-table-column title="操作">
+              <a-table-column :width="220" title="prd 地址" data-index="prd">
                 <template #cell="{ record }">
+                  <a-link
+                    v-if="record.prd"
+                    :href="record.prd"
+                    icon
+                    target="_blank"
+                  >
+                    {{ record.prd }}
+                  </a-link>
+                </template>
+              </a-table-column>
+              <a-table-column title="创建时间" data-index="updateTime" />
+              <a-table-column title="操作" align="right">
+                <template #cell="{ record }">
+                  <a-button type="text" @click="updateTask(record)">
+                    编辑
+                  </a-button>
                   <a-button type="text" @click="goTaskDetail(record._id)">
                     {{ $t('basicProfile.cell.view') }}
                   </a-button>
@@ -182,7 +197,7 @@
   </a-modal>
   <a-modal
     v-model:visible="taskModalVisible"
-    title="创建任务"
+    :title="currentTask ? '编辑任务' : '创建任务'"
     @ok="sendCreateRequireModal"
   >
     <a-form :model="taskForm" label-align="left">
@@ -213,6 +228,18 @@
         label="jira  地址"
       >
         <a-input v-model="taskForm.jira">
+          <template #suffix>
+            <icon-link />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="prd"
+        label="prd  地址"
+      >
+        <a-input v-model="taskForm.prd">
           <template #suffix>
             <icon-link />
           </template>
@@ -251,7 +278,7 @@
   import { getCodeStore } from '@/api/codeStore';
   import { getMemberByPage } from '@/api/member';
   import { getProjectById, addCodeStoreById } from '@/api/project';
-  import { getTaskByPage, createTask } from '@/api/task';
+  import { getTaskByPage, createTask, updateTaskById } from '@/api/task';
   import router from '@/router';
   import { onBeforeMount, ref, reactive } from 'vue';
   import { useRoute } from 'vue-router';
@@ -260,6 +287,7 @@
   const projectId = route.params.id?.toString();
   const codeStoreModalVisible = ref(false);
   const taskModalVisible = ref(false);
+  const currentTask: any = ref(null);
   const taskList = ref([]);
   const codeStoreDictList = ref<any[]>([]);
   const projectDetail = ref<any>({});
@@ -281,6 +309,7 @@
     name: '',
     type: '',
     jira: '',
+    prd: '',
     expectDate: undefined,
     feUserList: [],
     beUserList: [],
@@ -304,6 +333,25 @@
   };
 
   function addRequire() {
+    currentTask.value = undefined;
+    taskModalVisible.value = true;
+    taskForm.name = '';
+    taskForm.jira = '';
+    taskForm.prd = '';
+    taskForm.type = '';
+    taskForm.expectDate = undefined;
+    taskForm.feUserList = [];
+    taskForm.beUserList = [];
+  }
+  function updateTask(row: any) {
+    currentTask.value = row;
+    taskForm.name = row.name;
+    taskForm.jira = row.jira;
+    taskForm.prd = row.prd;
+    taskForm.type = row.type;
+    taskForm.expectDate = row.expectDate;
+    taskForm.feUserList = row.feUserList;
+    taskForm.beUserList = row.beUserList;
     taskModalVisible.value = true;
   }
 
@@ -348,10 +396,18 @@
 
   const sendCreateRequireModal = async () => {
     //
-    await createTask({
-      projectId,
-      ...taskForm,
-    });
+    if (currentTask.value) {
+      // eslint-disable-next-line no-underscore-dangle
+      await updateTaskById(currentTask.value._id, {
+        ...taskForm,
+      });
+    } else {
+      await createTask({
+        projectId,
+        ...taskForm,
+      });
+    }
+
     fetchTaskList();
   };
 

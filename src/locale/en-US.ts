@@ -5,11 +5,11 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
 
-import localeSearchTable from '@/views/list/search-table/locale/en-US';
-import localeCardList from '@/views/list/card/locale/en-US';
+// import localeSearchTable from '@/views/list/search-table/locale/en-US';
+// import localeCardList from '@/views/list/card/locale/en-US';
 
-import localeStepForm from '@/views/form/step/locale/en-US';
-import localeGroupForm from '@/views/form/group/locale/en-US';
+// import localeStepForm from '@/views/form/step/locale/en-US';
+// import localeGroupForm from '@/views/form/group/locale/en-US';
 
 import localeBasicProfile from '@/views/profile/basic/locale/en-US';
 
@@ -50,10 +50,6 @@ export default {
   ...localeWorkplace,
 
   ...localeMonitor,
-  ...localeSearchTable,
-  ...localeCardList,
-  ...localeStepForm,
-  ...localeGroupForm,
   ...localeBasicProfile,
   ...localeDataAnalysis,
   ...localeMultiDAnalysis,

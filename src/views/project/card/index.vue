@@ -15,7 +15,7 @@
           <a-row justify="space-between">
             <a-col :span="24">
               <a-tabs :default-active-tab="1" type="rounded">
-                <a-tab-pane key="1" :title="$t('cardList.tab.title.all')">
+                <a-tab-pane key="1" title="全部">
                   <!-- <QualityInspection />
                   <TheService />
                   <RulesPreset /> -->
@@ -57,7 +57,7 @@
               </a-tabs>
             </a-col>
             <a-input-search
-              :placeholder="$t('cardList.searchInput.placeholder')"
+              placeholder="请输入"
               style="width: 240px; position: absolute; top: 60px; right: 20px"
             />
           </a-row>

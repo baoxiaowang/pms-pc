@@ -4,8 +4,9 @@ import qs from 'query-string';
 export function createProject(data: {
   name: string;
   pmUser: string;
-  feUsers?: string[];
-  beUsers?: string[];
+  feUser?: string;
+  beUser?: string;
+  envLink?: string;
 }) {
   return axios.post('/api/project/add', {
     ...data,

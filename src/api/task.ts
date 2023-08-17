@@ -14,6 +14,24 @@ export function createTask(data: {
     ...data,
   });
 }
+
+export function updateTaskById(
+  id: string,
+  data: {
+    name: string;
+    type: string;
+    jira: string;
+    expectDate?: string;
+    feUserList?: string[];
+    beUserList?: string[];
+  }
+) {
+  return axios.post('/api/task/updateById', {
+    ...data,
+    id,
+  });
+}
+
 export function getTaskByPage({ projectId }: { projectId: string }) {
   return axios.get('/api/task/get', {
     params: {

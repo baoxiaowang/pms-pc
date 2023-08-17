@@ -7,11 +7,6 @@ import '@/views/dashboard/workplace/mock';
 
 import '@/views/dashboard/monitor/mock';
 
-import '@/views/list/card/mock';
-import '@/views/list/search-table/mock';
-
-import '@/views/form/step/mock';
-
 import '@/views/profile/basic/mock';
 
 import '@/views/visualization/data-analysis/mock';

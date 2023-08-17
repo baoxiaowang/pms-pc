@@ -10,7 +10,7 @@
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          Arco Pro
+          Sunyue Xiaolv
         </a-typography-title>
         <icon-menu-fold
           v-if="!topMenu && appStore.device === 'mobile'"
@@ -202,6 +202,7 @@
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
   import MessageBox from '../message-box/index.vue';
+  import defaultAvatar from '@/assets/images/default-avatar.png';
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -210,7 +211,7 @@
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
   const locales = [...LOCALE_OPTIONS];
   const avatar = computed(() => {
-    return userStore.avatar;
+    return userStore.avatar || defaultAvatar;
   });
   const theme = computed(() => {
     return appStore.theme;

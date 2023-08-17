@@ -102,6 +102,8 @@
       setLoading(true);
       try {
         await userStore.login(values as LoginData);
+        debugger;
+
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
           name: (redirect as string) || 'Workplace',

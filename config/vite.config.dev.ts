@@ -8,7 +8,20 @@ export default mergeConfig(
     server: {
       open: true,
       fs: {
-        strict: true,
+        // strict: true,
+      },
+      host: '0.0.0.0',
+      proxy: {
+        '/api': {
+          // target: 'https://neeko-design.com', // 接口基地址
+          target: 'http://127.0.0.1:7001',
+          changeOrigin: true,
+          // rewrite: (path) => path.replace(/^\/api/, '/api'),
+          // rewrite: (path) => {
+          // console.log(path); // 打印[/api/userInfo] 这就是http-proxy要请求的url,我们基地址实际是没有/api 所以replace掉
+          // return path.replace(/^\/api/, '');
+          // },
+        },
       },
     },
     plugins: [

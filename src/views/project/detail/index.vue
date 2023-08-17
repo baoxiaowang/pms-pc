@@ -1,0 +1,378 @@
+<template>
+  <div class="container">
+    <Breadcrumb :items="['项目列表', projectDetail.name || '']" />
+    <a-space direction="vertical" :size="16" fill>
+      <a-card class="general-card" title="项目详情">
+        <template #extra>
+          <a-link>编辑</a-link>
+        </template>
+
+        <a-divider style="margin-top: 0" />
+        <a-space direction="vertical" fill>
+          <a-row>
+            <a-col :span="2">项目名称: </a-col>
+            <a-col :span="8">
+              <a-tag> {{ projectDetail.name }} </a-tag>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="2">项目 pm: </a-col>
+            <a-col :span="8">
+              <a-tag> {{ projectDetail.pmMember?.name }} </a-tag>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="2">前端负责人: </a-col>
+            <a-col :span="8">
+              <a-tag> {{ projectDetail.feMember?.name }} </a-tag>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="2">后端负责人: </a-col>
+            <a-col :span="8">
+              <a-tag v-if="projectDetail.beMember?.name">
+                {{ projectDetail.beMember?.name }}
+              </a-tag>
+            </a-col>
+          </a-row>
+        </a-space>
+      </a-card>
+      <a-card class="general-card" title="代码仓库">
+        <template #extra>
+          <a-link @click="addCodeStore">添加</a-link>
+        </template>
+        <a-row class="code-store" :gutter="[24, 12]">
+          <a-col
+            v-for="store in projectDetail.codeStoreList"
+            :key="store.name"
+            :span="6"
+          >
+            <a-space direction="vertical" fill>
+              <div>仓库名：{{ store.storeName }}</div>
+              <!-- <div>{{ store.describe }}</div> -->
+              <div>主分支：{{ store.mainBranch }}</div>
+              <div>
+                仓库地址：
+                <a-link
+                  v-if="store.storeAddress"
+                  :href="store.storeAddress"
+                  icon
+                >
+                  {{ store.storeAddress }}
+                </a-link>
+              </div>
+            </a-space>
+          </a-col>
+        </a-row>
+      </a-card>
+      <a-card class="general-card" title="任务集合">
+        <template #extra>
+          <a-link @click="addRequire">新增</a-link>
+        </template>
+        <a-divider style="margin-top: 0" />
+        <a-spin :loading="false" style="width: 100%">
+          <a-table :data="taskList">
+            <template #columns>
+              <a-table-column title="#" data-index="">
+                <template #cell="{ rowIndex }">
+                  {{ rowIndex + 1 }}
+                </template>
+              </a-table-column>
+              <a-table-column title="任务类型" data-index="type">
+                <template #cell="{ record }">
+                  {{ taskTypeMap[record.type] }}
+                </template>
+              </a-table-column>
+              <a-table-column title="任务名称" data-index="name" />
+              <a-table-column title="状态">
+                <template #cell="{ record }">
+                  <a-tag :color="record.status.color">
+                    {{ record.status.label }}
+                  </a-tag>
+                </template>
+              </a-table-column>
+              <a-table-column title="jira 地址" data-index="jira">
+                <template #cell="{ record }">
+                  <a-link
+                    v-if="record.jira"
+                    :href="record.jira"
+                    icon
+                    target="_blank"
+                  >
+                    {{ record.jira }}
+                  </a-link>
+                </template>
+              </a-table-column>
+              <a-table-column title="创建时间" data-index="updateTime" />
+              <a-table-column title="操作">
+                <template #cell="{ record }">
+                  <a-button type="text" @click="goTaskDetail(record._id)">
+                    {{ $t('basicProfile.cell.view') }}
+                  </a-button>
+                </template>
+              </a-table-column>
+            </template>
+          </a-table>
+        </a-spin>
+      </a-card>
+    </a-space>
+  </div>
+  <!-- 项目涉及代码仓库 -->
+  <a-modal
+    v-model:visible="codeStoreModalVisible"
+    title="Modal Form"
+    @ok="sendCreateCodeStoreModal"
+  >
+    <a-form :model="codeStoreForm" label-align="left">
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="storeName"
+        label="仓库名称"
+      >
+        <a-select v-model="codeStoreForm.storeName">
+          <a-option
+            v-for="store in codeStoreDictList"
+            :key="store._id"
+            :value="store.name"
+          >
+            {{ store.name }}
+          </a-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="storeAddress"
+        label="仓库地址"
+      >
+        <a-input v-model:model-value="codeStoreForm.storeAddress"></a-input>
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="mainBranch"
+        label="主分支名"
+      >
+        <a-input v-model:model-value="codeStoreForm.mainBranch"></a-input>
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="nodeVersion"
+        label="node 版本"
+      >
+        <a-input v-model:model-value="codeStoreForm.nodeVersion"></a-input>
+      </a-form-item>
+      <a-form-item asterisk-position="end" field="remark" label="项目备注">
+        <a-textarea v-model:model-value="codeStoreForm.remark"></a-textarea>
+      </a-form-item>
+    </a-form>
+  </a-modal>
+  <a-modal
+    v-model:visible="taskModalVisible"
+    title="创建任务"
+    @ok="sendCreateRequireModal"
+  >
+    <a-form :model="taskForm" label-align="left">
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="name"
+        label="任务名称"
+      >
+        <a-input v-model="taskForm.name" />
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="type"
+        label="任务类型"
+      >
+        <a-select v-model="taskForm.type">
+          <a-option value="require">新增需求</a-option>
+          <a-option value="bug">线上bug</a-option>
+          <a-option value="other">其他</a-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item
+        asterisk-position="end"
+        required
+        field="jira"
+        label="jira  地址"
+      >
+        <a-input v-model="taskForm.jira">
+          <template #suffix>
+            <icon-link />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item field="post" label="前端开发">
+        <a-select v-model="taskForm.feUserList" multiple>
+          <a-option
+            v-for="member in memberList"
+            :key="member._id"
+            :value="member._id"
+          >
+            {{ member.name }}
+          </a-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item field="post" label="后端开发">
+        <a-select v-model="taskForm.beUserList" multiple>
+          <a-option
+            v-for="member in memberList"
+            :key="member._id"
+            :value="member._id"
+          >
+            {{ member.name }}
+          </a-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item field="post" label="期望上线日期">
+        <a-date-picker v-model="taskForm.expectDate" style="width: 100%" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
+</template>
+
+<script setup lang="ts">
+  import { getCodeStore } from '@/api/codeStore';
+  import { getMemberByPage } from '@/api/member';
+  import { getProjectById, addCodeStoreById } from '@/api/project';
+  import { getTaskByPage, createTask } from '@/api/task';
+  import router from '@/router';
+  import { onBeforeMount, ref, reactive } from 'vue';
+  import { useRoute } from 'vue-router';
+
+  const route = useRoute();
+  const projectId = route.params.id?.toString();
+  const codeStoreModalVisible = ref(false);
+  const taskModalVisible = ref(false);
+  const taskList = ref([]);
+  const codeStoreDictList = ref<any[]>([]);
+  const projectDetail = ref<any>({});
+  const memberList = ref<any[]>([]);
+  const taskTypeMap: any = {
+    require: '需求',
+    bug: 'bug',
+    other: '其他',
+  };
+  const codeStoreForm = reactive({
+    storeName: '',
+    storeAddress: '',
+    mainBranch: '',
+    nodeVersion: '',
+    remark: '',
+  });
+
+  const taskForm = reactive({
+    name: '',
+    type: '',
+    jira: '',
+    expectDate: undefined,
+    feUserList: [],
+    beUserList: [],
+  });
+  async function fetchProjectDetail() {
+    const { data } = await getProjectById(projectId);
+    projectDetail.value = data;
+  }
+
+  const sendCreateCodeStoreModal = async () => {
+    //
+    await addCodeStoreById({
+      projectId,
+      codeStoreItem: codeStoreForm,
+    });
+    fetchProjectDetail();
+  };
+
+  const addCodeStore = () => {
+    codeStoreModalVisible.value = true;
+  };
+
+  function addRequire() {
+    taskModalVisible.value = true;
+  }
+
+  async function fetchCodeStoreDict() {
+    const { data } = await getCodeStore();
+    codeStoreDictList.value = data.list;
+  }
+  async function fetchMemberList() {
+    const { data } = await getMemberByPage();
+    memberList.value = data.list;
+  }
+  async function fetchTaskList() {
+    const { data } = await getTaskByPage({ projectId });
+    taskList.value = data.list.map((item: any) => {
+      const taskInfoList = item.taskInfoList || [];
+      let label = '';
+      let color = '#86909c';
+      if (taskInfoList.length === 0) {
+        label = '未开始';
+        color = '#86909c';
+      } else {
+        const doneList = taskInfoList.filter(
+          (info: any) => info.status === 'done'
+        );
+        if (doneList.length === taskInfoList.length) {
+          label = '开发完成';
+          color = '#00b42a';
+        } else {
+          label = '进行中';
+          color = '#168cff';
+        }
+      }
+      return {
+        status: {
+          color,
+          label,
+        },
+        ...item,
+      };
+    });
+  }
+
+  const sendCreateRequireModal = async () => {
+    //
+    await createTask({
+      projectId,
+      ...taskForm,
+    });
+    fetchTaskList();
+  };
+
+  function goTaskDetail(taskId: string) {
+    router.push({
+      name: 'projectTask',
+      params: {
+        id: taskId,
+      },
+    });
+  }
+  onBeforeMount(() => {
+    fetchCodeStoreDict();
+    fetchProjectDetail();
+    fetchMemberList();
+    fetchTaskList();
+  });
+</script>
+
+<style lang="less" scoped>
+  .container {
+    padding: 0 20px 20px 20px;
+  }
+  .general-card {
+  }
+  .code-store {
+    & > .arco-col {
+      & > div {
+        padding: 20px;
+        // background-color: var(--color-primary-light-4);
+        border: 1px solid #eee;
+      }
+    }
+  }
+</style>

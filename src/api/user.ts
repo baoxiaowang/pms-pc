@@ -3,6 +3,7 @@ import type { RouteRecordNormalized } from 'vue-router';
 import { UserState } from '@/store/modules/user/types';
 
 export interface LoginData {
+  account: string;
   username: string;
   password: string;
 }

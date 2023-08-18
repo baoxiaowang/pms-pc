@@ -293,6 +293,7 @@
 
   .right-side {
     display: flex;
+    margin-bottom: 0;
     padding-right: 20px;
     list-style: none;
     :deep(.locale-select) {

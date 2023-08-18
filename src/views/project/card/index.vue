@@ -75,8 +75,11 @@
   import CardLayout from './components/card-layout.vue';
   import { getProjectPageList } from '@/api/project';
   import { ref, onBeforeMount, reactive, computed } from 'vue';
+  import { useUserStore } from '@/store';
 
   const list = ref<any[]>([]);
+
+  const userStore = useUserStore();
 
   async function fetchProjectList() {
     const { data } = await getProjectPageList();
@@ -89,9 +92,11 @@
     const other: any[] = [];
     list.value.forEach((item) => {
       const { taskList } = item;
-      const ownerPro = item.pmUser === '鲍小旺';
+      const ownerPro = [item.pmUser, item.feUser, item.beUser].includes(
+        userStore.id
+      );
       const devPro = taskList.some((task: any) =>
-        task.feUserList?.includes('64dc865f98fc973190f89bd4')
+        task.feUserList?.includes(userStore.id)
       );
       if (ownerPro) {
         owner.push(item);

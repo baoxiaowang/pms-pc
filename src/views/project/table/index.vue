@@ -210,9 +210,17 @@
         </template>
         <template #feUser="{ record }">
           <UserTag
+            v-if="record.feOwnerMember"
             :id="record.feOwnerMember?.id"
             :name="record.feOwnerMember?.name"
           ></UserTag>
+        </template>
+        <template #beUser="{ record }">
+          <UserTag
+            v-if="record.beOwnerMember"
+            :id="record.beOwnerMember?.id"
+            :name="record.beOwnerMember?.name"
+          />
         </template>
         <template #status="{ record }">
           <span v-if="record.status === 'offline'" class="circle"></span>
@@ -223,72 +231,22 @@
           <a-button type="text" size="small" @click="goDetail(record)">
             查看
           </a-button>
-          <a-button type="text" size="small" @click="goDetail(record)">
+          <a-button
+            type="text"
+            size="small"
+            @click="editorProjectClick(record)"
+          >
             编辑
           </a-button>
         </template>
       </a-table>
     </a-card>
+    <ProjectFormModal
+      v-model:visible="projectModalVisible"
+      :form="projectForm"
+      @confirm="sendCreateModal"
+    ></ProjectFormModal>
   </div>
-  <a-modal
-    v-model:visible="projectModalVisible"
-    title="新建项目"
-    @ok="sendCreateModal"
-  >
-    <a-form auto-label-width :model="projectForm" label-align="left">
-      <a-form-item
-        asterisk-position="end"
-        required
-        field="name"
-        label="项目名称"
-      >
-        <a-input v-model="projectForm.name" placeholder="请输入项目名称" />
-      </a-form-item>
-      <a-form-item asterisk-position="end" required field="pmUser" label="PM">
-        <a-select v-model="projectForm.pmUser" placeholder="请选择">
-          <a-option
-            v-for="member in memberList"
-            :key="member._id"
-            :value="member._id"
-          >
-            {{ member.name }}
-          </a-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item field="post" label="前端负责人">
-        <a-select v-model="projectForm.feUser" placeholder="请选择">
-          <a-option
-            v-for="member in memberList"
-            :key="member._id"
-            :value="member._id"
-          >
-            {{ member.name }}
-          </a-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item field="post" label="后端负责人">
-        <a-select v-model="projectForm.beUser" placeholder="请选择">
-          <a-option
-            v-for="member in memberList"
-            :key="member._id"
-            :value="member._id"
-          >
-            {{ member.name }}
-          </a-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item field="name" label="项目环境配置">
-        <a-input
-          v-model="projectForm.envLink"
-          placeholder="vpn host 相关环境配置"
-        >
-          <template #suffix>
-            <icon-link />
-          </template>
-        </a-input>
-      </a-form-item>
-    </a-form>
-  </a-modal>
 </template>
 
 <script lang="ts" setup>
@@ -301,9 +259,14 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  import { createProject, getProjectPageList } from '@/api/project';
+  import {
+    createProject,
+    getProjectPageList,
+    updateProjectById,
+  } from '@/api/project';
   import router from '@/router';
   import { getMemberByPage } from '@/api/member';
+  import ProjectFormModal from '@/components/project-form-modal/index.vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
@@ -326,6 +289,7 @@
   const showColumns = ref<Column[]>([]);
   const projectModalVisible = ref(false);
   const projectForm = reactive({
+    id: '',
     name: '',
     pmUser: '',
     feUser: '',
@@ -383,6 +347,7 @@
     {
       title: '后端负责人',
       dataIndex: 'beUser',
+      slotName: 'beUser',
     },
     {
       title: '备注',
@@ -539,10 +504,18 @@
     // createProject({});
     projectModalVisible.value = true;
   }
-  function sendCreateModal() {
-    createProject({
-      ...projectForm,
-    });
+  async function sendCreateModal(form: any) {
+    if (form.id) {
+      await updateProjectById(form.id, {
+        ...form,
+      });
+    } else {
+      await createProject({
+        ...form,
+      });
+    }
+
+    await fetchData();
   }
 
   function goDetail(row: any) {
@@ -553,6 +526,16 @@
         id: row._id,
       },
     });
+  }
+  function editorProjectClick(row: any) {
+    // eslint-disable-next-line no-underscore-dangle
+    projectForm.id = row.id || row._id;
+    projectForm.name = row.name;
+    projectForm.feUser = row.feUser;
+    projectForm.beUser = row.beUser;
+    projectForm.pmUser = row.pmUser;
+    projectForm.envLink = row.envLink;
+    projectModalVisible.value = true;
   }
 
   onBeforeMount(() => {

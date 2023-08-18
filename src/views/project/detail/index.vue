@@ -40,9 +40,14 @@
           <a-row>
             <a-col :span="2">后端负责人: </a-col>
             <a-col :span="8">
-              <a-tag v-if="projectDetail.beMember?.name">
+              <!-- <a-tag v-if="projectDetail.beMember">
                 {{ projectDetail.beMember?.name }}
-              </a-tag>
+              </a-tag> -->
+              <UserTag
+                :id="projectDetail.beMember?.id"
+                :name="projectDetail.beMember?.name"
+              >
+              </UserTag>
             </a-col>
           </a-row>
         </a-space>
@@ -56,6 +61,7 @@
             v-for="store in projectDetail.codeStoreList"
             :key="store.name"
             :span="8"
+            class="code-store-item"
           >
             <a-space direction="vertical" fill>
               <div>仓库名：{{ store.storeName }}</div>
@@ -68,7 +74,23 @@
                   class="text-hidden"
                   style="flex: 1; justify-content: flex-start"
                   :href="store.storeAddress"
+                  target="_blank"
                   icon
+                  @click.stop
+                >
+                  {{ store.storeAddress }}
+                </a-link>
+              </div>
+              <div class="flex-v-center">
+                jenkins 地址：
+                <a-link
+                  v-if="store.storeAddress"
+                  class="text-hidden"
+                  style="flex: 1; justify-content: flex-start"
+                  :href="store.storeAddress"
+                  target="_blank"
+                  icon
+                  @click.stop
                 >
                   {{ store.storeAddress }}
                 </a-link>
@@ -206,6 +228,12 @@
           placeholder="请输入 node 兼容版本"
         ></a-input>
       </a-form-item>
+      <a-form-item field="jenkins" label="jenkins 地址">
+        <a-input
+          v-model:model-value="codeStoreForm.jenkins"
+          placeholder="请输入 jenkins 地址"
+        ></a-input>
+      </a-form-item>
       <a-form-item asterisk-position="end" field="remark" label="项目备注">
         <a-textarea
           v-model:model-value="codeStoreForm.remark"
@@ -327,6 +355,7 @@
     mainBranch: '',
     nodeVersion: '',
     remark: '',
+    jenkins: '',
   });
 
   const taskForm = reactive({
@@ -463,11 +492,19 @@
   .general-card {
   }
   .code-store {
+    .code-store-item {
+    }
+
     & > .arco-col {
       & > div {
         padding: 20px;
         // background-color: var(--color-primary-light-4);
         border: 1px solid #eee;
+        cursor: pointer;
+        &:hover {
+          transition: all 200ms;
+          box-shadow: inset 0 0 0px 1px rgb(var(--primary-6));
+        }
       }
     }
   }

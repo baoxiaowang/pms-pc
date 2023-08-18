@@ -5,7 +5,7 @@
       <a-col :span="24">
         <a-card class="general-card" title="项目概览">
           <template #extra>
-            <a-button type="primary">
+            <a-button type="primary" @click="projectModalVisible = true">
               <template #icon>
                 <icon-plus />
               </template>
@@ -65,21 +65,38 @@
       </a-col>
     </a-row>
   </div>
+  <ProjectFormModal
+    v-model:visible="projectModalVisible"
+    :form="projectForm"
+    @confirm="sendCreateModal"
+  ></ProjectFormModal>
 </template>
 
 <script lang="ts" setup>
-  import QualityInspection from './components/quality-inspection.vue';
-  import TheService from './components/the-service.vue';
-  import RulesPreset from './components/rules-preset.vue';
+  import ProjectFormModal from '@/components/project-form-modal/index.vue';
+
   import projectCard from './components/project-card.vue';
   import CardLayout from './components/card-layout.vue';
-  import { getProjectPageList } from '@/api/project';
+  import {
+    createProject,
+    getProjectPageList,
+    updateProjectById,
+  } from '@/api/project';
   import { ref, onBeforeMount, reactive, computed } from 'vue';
   import { useUserStore } from '@/store';
 
   const list = ref<any[]>([]);
+  const projectForm = reactive({
+    id: '',
+    name: '',
+    pmUser: '',
+    feUser: '',
+    beUser: '',
+    envLink: '',
+  });
 
   const userStore = useUserStore();
+  const projectModalVisible = ref(false);
 
   async function fetchProjectList() {
     const { data } = await getProjectPageList();
@@ -114,6 +131,19 @@
       other,
     };
   });
+
+  async function sendCreateModal(form: any) {
+    if (form.id) {
+      await updateProjectById(form.id, {
+        ...form,
+      });
+    } else {
+      await createProject({
+        ...form,
+      });
+    }
+    fetchProjectList();
+  }
 
   onBeforeMount(() => {
     fetchProjectList();

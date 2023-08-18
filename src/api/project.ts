@@ -13,6 +13,22 @@ export function createProject(data: {
   });
 }
 
+export function updateProjectById(
+  id: string,
+  data: {
+    name: string;
+    pmUser: string;
+    feUser?: string;
+    beUser?: string;
+    envLink?: string;
+  }
+) {
+  return axios.post('/api/project/updateById', {
+    ...data,
+    id,
+  });
+}
+
 export function addCodeStoreById(data: {
   projectId: string;
   codeStoreItem: {

@@ -7,7 +7,11 @@ export function createMember(data: { name: string; describe?: string }) {
   });
 }
 export function getMemberByPage() {
-  return axios.get('/api/member/get', {
+  if (window.getMemberPromise) {
+    return window.getMemberPromise;
+  }
+  (window as any).getMemberPromise = axios.get('/api/member/get', {
     params: {},
   });
+  return window.getMemberPromise;
 }

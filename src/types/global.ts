@@ -35,3 +35,9 @@ export interface GeneralChart {
   xAxis: string[];
   data: Array<{ name: string; value: number[] }>;
 }
+
+declare global {
+  interface Window {
+    getMemberPromise: Promise<{ data: { list: any[] } }>;
+  }
+}

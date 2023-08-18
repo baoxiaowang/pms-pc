@@ -55,17 +55,6 @@ const project: AppRouteRecordRaw = {
         hideInMenu: true,
       },
     },
-    {
-      path: 'task/:id',
-      name: 'projectTask',
-      component: () => import('@/views/project/task/index.vue'),
-      meta: {
-        locale: '任务详情',
-        requiresAuth: true,
-        hideInMenu: true,
-        roles: ['*'],
-      },
-    },
   ],
 };
 

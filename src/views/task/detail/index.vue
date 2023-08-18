@@ -6,10 +6,22 @@
         <template #title>
           <div class="task-title-block">
             <div class="task-name">
-              任务详情
-              <a-button type="text">
-                <icon-edit />
-              </a-button>
+              <a-space>
+                任务详情
+                <a-button-group>
+                  <a-button title="编辑" size="mini" type="text">
+                    <icon-edit />
+                  </a-button>
+                  <a-button
+                    title="分析"
+                    size="mini"
+                    type="text"
+                    @click="goTaskAnalysis"
+                  >
+                    <icon-bar-chart />
+                  </a-button>
+                </a-button-group>
+              </a-space>
             </div>
             <div class="task-action"> </div>
           </div>
@@ -25,13 +37,11 @@
               position="rt"
               @ok="startDevClick"
             >
-              <a-button v-if="!taskDetail.devStarting" type="outline">
-                开始开发
-              </a-button>
+              <a-button v-if="!devStarting" type="outline"> 开始开发 </a-button>
             </a-popconfirm>
 
             <a-button
-              v-if="taskDetail.devStarting"
+              v-if="devStarting && !devDoneRef"
               type="primary"
               @click="devDoneClick"
             >
@@ -63,6 +73,12 @@
                 :key="item._id"
                 :name="item.name"
               ></UserTag>
+            </a-space>
+          </div>
+          <a-divider direction="vertical" />
+          <div>
+            预期上线时间:<a-space>
+              {{ taskDetail.expectDate }}
             </a-space>
           </div>
         </a-space>
@@ -99,7 +115,7 @@
                         :color="
                           item.confirmed
                             ? 'rgb(var(--green-6))'
-                            : 'rgb(var(--orange-6))'
+                            : 'var(--color-neutral-4)'
                         "
                         size="small"
                       >
@@ -185,13 +201,14 @@
 </template>
 
 <script setup lang="ts">
-  //
   import { devDone, getTaskById, pmConfirmed, startDev } from '@/api/task';
   import {
     createTaskInfo,
     getTaskInfoByTaskId,
     updateTaskInfoById,
   } from '@/api/taskInfo';
+  import router from '@/router';
+  import { useUserStore } from '@/store';
   import { Message, Modal } from '@arco-design/web-vue';
   import { arrayType } from 'ant-design-vue/es/_util/type';
   import { watch, computed, reactive, onBeforeMount, ref } from 'vue';
@@ -199,6 +216,7 @@
   import VueDraggable from 'vuedraggable';
 
   const route = useRoute();
+  const userStore = useUserStore();
   const taskId = route.params.id.toString();
   const listMap = reactive<any>({
     todo: [],
@@ -214,6 +232,16 @@
 
   const needPmConfirm = computed(() => {
     return taskInfoList.value.some((item) => !item.confirmed);
+  });
+
+  const devStarting = computed(() => {
+    const devStartingMap = taskDetail.value.devStartingMap || {};
+    return devStartingMap[userStore.id as string];
+  });
+
+  const devDoneRef = computed(() => {
+    const devDoneMap = taskDetail.value.devDoneMap || {};
+    return devDoneMap[userStore.id as string];
   });
 
   const implementerList = computed(() => {
@@ -234,20 +262,18 @@
     const todo: any[] = [];
     const doing: any[] = [];
     const done: any[] = [];
-    currentCheckImplementer.value = val.map((item) => item.implementer);
-    val
-      .filter((item) =>
-        currentCheckImplementer.value.includes(item.implementer as string)
-      )
-      .forEach((item) => {
-        if (item.status === 'done') {
-          done.push(item);
-        } else if (item.status === 'doing') {
-          doing.push(item);
-        } else {
-          todo.push(item);
-        }
-      });
+    // currentCheckImplementer.value = val.map((item) => item.implementer);
+    currentCheckImplementer.value = [userStore.id as string];
+
+    val.forEach((item) => {
+      if (item.status === 'done') {
+        done.push(item);
+      } else if (item.status === 'doing') {
+        doing.push(item);
+      } else {
+        todo.push(item);
+      }
+    });
     listMap.todo = todo;
     listMap.doing = doing;
     listMap.done = done;
@@ -311,7 +337,17 @@
       async onOk() {
         // eslint-disable-next-line no-underscore-dangle
         await devDone(taskDetail.value._id);
+        await fetchTaskDetail();
         await fetchTaskInfoList();
+      },
+    });
+  }
+
+  function goTaskAnalysis() {
+    router.push({
+      name: 'taskAnalysis',
+      params: {
+        id: taskId,
       },
     });
   }
@@ -415,5 +451,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    .task-name {
+      display: flex;
+      align-items: center;
+    }
   }
 </style>

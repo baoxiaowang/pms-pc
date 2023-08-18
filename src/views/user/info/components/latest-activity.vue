@@ -93,7 +93,7 @@
 
   function goTaskDetail(taskId: string) {
     router.push({
-      name: 'projectTask',
+      name: 'taskDetail',
       params: {
         id: taskId,
       },

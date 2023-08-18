@@ -220,13 +220,11 @@
           {{ $t(`searchTable.form.status.${record.status}`) }}
         </template>
         <template #operations="{ record }">
-          <a-button
-            v-permission="['admin']"
-            type="text"
-            size="small"
-            @click="goDetail(record)"
-          >
+          <a-button type="text" size="small" @click="goDetail(record)">
             查看
+          </a-button>
+          <a-button type="text" size="small" @click="goDetail(record)">
+            编辑
           </a-button>
         </template>
       </a-table>
@@ -397,6 +395,8 @@
     },
     {
       title: '操作',
+      width: 200,
+      align: 'right',
       dataIndex: 'operations',
       slotName: 'operations',
     },

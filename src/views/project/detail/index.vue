@@ -298,10 +298,10 @@
   import { getMemberByPage } from '@/api/member';
   import { getProjectById, addCodeStoreById } from '@/api/project';
   import {
-    getTaskByPage,
     createTask,
     updateTaskById,
     deleteTaskById,
+    getByProjectId,
   } from '@/api/task';
   import router from '@/router';
   import { onBeforeMount, ref, reactive } from 'vue';
@@ -388,7 +388,7 @@
     memberList.value = data.list;
   }
   async function fetchTaskList() {
-    const { data } = await getTaskByPage({ projectId });
+    const { data } = await getByProjectId({ projectId });
     taskList.value = data.list.map((item: any) => {
       const taskInfoList = item.taskInfoList || [];
       let label = '';

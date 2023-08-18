@@ -40,6 +40,14 @@ export function getTaskByPage({ projectId }: { projectId: string }) {
   });
 }
 
+export function getByProjectId({ projectId }: { projectId: string }) {
+  return axios.get('/api/task/getByProjectId', {
+    params: {
+      projectId,
+    },
+  });
+}
+
 export function getTaskById(projectId: string) {
   return axios.get('/api/task/getById', {
     params: {

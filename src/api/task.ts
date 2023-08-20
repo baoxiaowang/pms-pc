@@ -78,6 +78,19 @@ export function pmConfirmed(taskId: string) {
   });
 }
 
+export function devConfirmed(
+  taskId: string,
+  data: {
+    startDate: number;
+    inputRatio: number;
+  }
+) {
+  return axios.post('/api/task/devConfirm', {
+    taskId,
+    ...data,
+  });
+}
+
 export function startDev(taskId: string) {
   return axios.post('/api/task/startDev', {
     taskId,

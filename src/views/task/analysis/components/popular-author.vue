@@ -1,7 +1,7 @@
 <template>
   <a-spin :loading="loading" style="width: 100%">
     <a-card class="general-card" :header-style="{ paddingBottom: '14px' }">
-      <template #title> 执行人任务分析 </template>
+      <template #title> 任务分布 </template>
       <template #extra>
         <a-link @click="goTaskDetail">{{ $t('workplace.viewMore') }}</a-link>
       </template>
@@ -66,11 +66,11 @@
 
   const colorList = [
     '#00b42a',
-    '#165dff',
+    '#0fc6c2',
     '#ff7d00',
     '#eb0aa4',
     '#7bc616',
-    '#0fc6c2',
+    '#165dff',
   ];
   const { chartOption } = useChartOption((_) => {
     return {
@@ -101,14 +101,14 @@
           axisLabel: {
             show: 'true',
             formatter(value, index) {
-              return `${value}h`;
+              return `${value / 8}人/天`;
             },
           },
         },
       ],
       series: [
         {
-          name: 'Direct',
+          name: '工时',
           type: 'bar',
           barMaxWidth: '40px',
           data: implementerList.value.map((item, index) => {

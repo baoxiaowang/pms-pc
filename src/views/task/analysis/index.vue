@@ -11,7 +11,11 @@
             <a-grid-item
               :span="{ xs: 24, sm: 24, md: 24, lg: 24, xl: 16, xxl: 16 }"
             >
-              <ContentPublishRatio :task-info-list="taskInfoList" />
+              <TaskTimeAnalysis
+                :task-id="taskId"
+                :task-info-list="taskInfoList"
+                :task-detail="taskDetail"
+              />
             </a-grid-item>
             <a-grid-item
               :span="{ xs: 24, sm: 24, md: 24, lg: 24, xl: 8, xxl: 8 }"
@@ -31,14 +35,16 @@
 <script lang="ts" setup>
   import PublicOpinion from './components/public-opinion.vue';
   import ContentPeriodAnalysis from './components/content-period-analysis.vue';
-  import ContentPublishRatio from './components/content-publish-ratio.vue';
+  import TaskTimeAnalysis from './components/task-time-analysis.vue';
   import PopularAuthor from './components/popular-author.vue';
   import { ref, onBeforeMount } from 'vue';
   import { getTaskInfoByTaskId } from '@/api/taskInfo';
   import { useUserStore } from '@/store';
   import { useRoute } from 'vue-router';
+  import { getTaskById } from '@/api/task';
 
   const route = useRoute();
+  const taskDetail = ref<any>({});
   const userStore = useUserStore();
   const taskId = route.params.id.toString();
   const taskInfoList = ref<any[]>([]);
@@ -47,9 +53,14 @@
     const { data } = await getTaskInfoByTaskId(taskId);
     taskInfoList.value = data;
   }
+  async function fetchTaskDetail() {
+    const { data } = await getTaskById(taskId);
+    taskDetail.value = data;
+  }
 
   onBeforeMount(() => {
     fetchTaskInfoList();
+    fetchTaskDetail();
   });
 </script>
 

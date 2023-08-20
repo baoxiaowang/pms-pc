@@ -15,3 +15,11 @@ export function getMemberByPage() {
   });
   return window.getMemberPromise;
 }
+
+export async function getMemberMap() {
+  const { data } = await getMemberByPage();
+  return data.list.reduce((map, item) => {
+    map[item.id] = item;
+    return map;
+  }, {});
+}

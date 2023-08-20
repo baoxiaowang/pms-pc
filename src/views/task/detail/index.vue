@@ -29,16 +29,18 @@
         <template #extra>
           <a-space>
             <a-button>转 交</a-button>
-            <a-button v-if="needPmConfirm" type="outline" @click="pmConfirm">
-              PM 确认
-            </a-button>
-            <a-popconfirm
+            <!-- v-if="needPmConfirm" -->
+            <a-button type="outline" @click="pmConfirm"> PM 确认 </a-button>
+
+            <a-button type="outline" @click="devConfirm"> 开发确认 </a-button>
+
+            <!-- <a-popconfirm
               content="确认开始开发后，需求会从当前开始计算完成时间，请确认?"
               position="rt"
               @ok="startDevClick"
             >
               <a-button v-if="!devStarting" type="outline"> 开始开发 </a-button>
-            </a-popconfirm>
+            </a-popconfirm> -->
 
             <a-button
               v-if="devStarting && !devDoneRef"
@@ -77,7 +79,7 @@
           </div>
           <a-divider direction="vertical" />
           <div>
-            预期上线时间:<a-space>
+            期望上线时间:<a-space>
               {{ taskDetail.expectDate }}
             </a-space>
           </div>
@@ -150,8 +152,31 @@
                   :key="member.id"
                   :value="member.id"
                 >
-                  {{ member.name }}</a-checkbox
-                >
+                  {{ member.name }}
+                  <span
+                    class="dev-info-block"
+                    :class="{
+                      'dev-info-block--confirmed':
+                        developerMap[member.id]?.confirmed,
+                    }"
+                  >
+                    (
+                    {{
+                      developerMap[member.id]?.startDate
+                        ? dayjs(developerMap[member.id]?.startDate).format(
+                            'YYYY-MM-DD'
+                          )
+                        : '未确认'
+                    }}
+                    |
+                    {{
+                      '投入:' +
+                      (developerMap[member.id]?.inputRatio || 100) +
+                      '%'
+                    }}
+                    )
+                  </span>
+                </a-checkbox>
               </a-checkbox-group>
             </div>
           </div>
@@ -198,10 +223,37 @@
       </a-form-item>
     </a-form>
   </a-modal>
+
+  <a-modal
+    v-model:visible="devConfirmVisible"
+    title="开发确认"
+    @ok="devConfirmOk"
+  >
+    <a-form auto-label-width :model="devConfirmForm">
+      <a-form-item required field="startDate" label="开始时间">
+        <a-date-picker
+          v-model="devConfirmForm.startDate"
+          value-format="timestamp"
+          style="width: 100%"
+        ></a-date-picker>
+      </a-form-item>
+      <a-form-item required field="post" label="投入比例">
+        <a-input-number
+          v-model="devConfirmForm.inputRatio"
+          style="width: 100%"
+          placeholder="请输入投入比例"
+          :default-value="100"
+          mode="button"
+        >
+          <template #suffix> % </template>
+        </a-input-number>
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
-  import { devDone, getTaskById, pmConfirmed, startDev } from '@/api/task';
+  import { devDone, getTaskById, pmConfirmed, devConfirmed } from '@/api/task';
   import {
     createTaskInfo,
     getTaskInfoByTaskId,
@@ -211,6 +263,7 @@
   import { useUserStore } from '@/store';
   import { Message, Modal } from '@arco-design/web-vue';
   import { arrayType } from 'ant-design-vue/es/_util/type';
+  import dayjs from 'dayjs';
   import { watch, computed, reactive, onBeforeMount, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import VueDraggable from 'vuedraggable';
@@ -218,10 +271,15 @@
   const route = useRoute();
   const userStore = useUserStore();
   const taskId = route.params.id.toString();
+  const devConfirmVisible = ref(false);
   const listMap = reactive<any>({
     todo: [],
     doing: [],
     done: [],
+  });
+  const devConfirmForm = ref({
+    startDate: +dayjs(dayjs().format('YYYY-MM-DD 00:00:00')),
+    inputRatio: 100,
   });
 
   const currentCheckImplementer = ref<string[]>([]);
@@ -229,6 +287,9 @@
   const taskDetail = ref<any>({});
   const taskInfoModalVisible = ref(false);
   const taskInfoList = ref<any[]>([]);
+  const developerMap = computed(() => {
+    return taskDetail.value.developerMap || {};
+  });
 
   const needPmConfirm = computed(() => {
     return taskInfoList.value.some((item) => !item.confirmed);
@@ -322,11 +383,21 @@
     // eslint-disable-next-line no-underscore-dangle
     await pmConfirmed(taskDetail.value._id);
     await fetchTaskInfoList();
+    await fetchTaskDetail();
+
     Message.success('确认成功');
   }
-  async function startDevClick() {
+  // async function startDevClick() {
+  //   // eslint-disable-next-line no-underscore-dangle
+  //   await startDev(taskDetail.value._id);
+  //   await fetchTaskDetail();
+  //   Message.success('确认成功');
+  // }
+  async function devConfirmOk() {
     // eslint-disable-next-line no-underscore-dangle
-    await startDev(taskDetail.value._id);
+    await devConfirmed(taskDetail.value._id, {
+      ...devConfirmForm.value,
+    });
     await fetchTaskDetail();
     Message.success('确认成功');
   }
@@ -341,6 +412,15 @@
         await fetchTaskInfoList();
       },
     });
+  }
+
+  async function devConfirm() {
+    devConfirmVisible.value = true;
+    devConfirmForm.value = {
+      startDate: +dayjs(dayjs().format('YYYY-MM-DD 00:00:00')),
+      inputRatio: 100,
+      ...(developerMap.value[userStore.id as string] || {}),
+    };
   }
 
   function goTaskAnalysis() {
@@ -367,7 +447,7 @@
   }
   .task-info-detail {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 200px;
+    grid-template-columns: repeat(3, 1fr) 280px;
     min-height: calc(100% - 200px);
     column-gap: 20px;
   }
@@ -455,5 +535,11 @@
       display: flex;
       align-items: center;
     }
+  }
+  .dev-info-block {
+    color: var(--color-neutral-4);
+  }
+  .dev-info-block--confirmed {
+    color: rgb(var(--green-6));
   }
 </style>

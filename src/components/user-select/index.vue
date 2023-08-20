@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model="modelRef" placeholder="请选择">
+  <a-select v-model="modelRef" :multiple="multiple" placeholder="请选择">
     <a-option
       v-for="member in memberList"
       :key="member._id"
@@ -16,10 +16,11 @@
 
   const memberList = ref<any[]>([]);
   const props = defineProps<{
-    modelValue: string;
+    multiple?: boolean;
+    modelValue: string | string[];
   }>();
   const emit = defineEmits<{
-    (e: 'update:model-value', d?: string): void;
+    (e: 'update:model-value', d?: string | string[]): void;
   }>();
 
   const modelRef = computed({

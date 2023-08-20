@@ -13,6 +13,7 @@ import App from './App.vue';
 // https://arco.design/docs/designlab/use-theme-package
 import '@/assets/style/global.less';
 import '@/api/interceptor';
+import { Modal } from 'ant-design-vue';
 
 const app = createApp(App);
 
@@ -26,3 +27,5 @@ app.use(globalComponents);
 app.use(directive);
 
 app.mount('#app');
+// eslint-disable-next-line no-underscore-dangle
+(Modal as any)._context = app._context;

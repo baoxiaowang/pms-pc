@@ -6,7 +6,7 @@
       :body-style="{
         paddingTop: '20px',
       }"
-      :title="$t('workplace.contentData')"
+      title="效率报表"
     >
       <template #extra>
         <a-link>{{ $t('workplace.viewMore') }}</a-link>
@@ -48,7 +48,7 @@
   const { chartOption } = useChartOption(() => {
     return {
       grid: {
-        left: '2.6%',
+        left: '40',
         right: '0',
         top: '10',
         bottom: '30',

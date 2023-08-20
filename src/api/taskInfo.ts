@@ -44,3 +44,13 @@ export function getTaskInfoByTaskId(taskId: string) {
     },
   });
 }
+
+export function getDoneTaskAnalysis(data: {
+  memberList: string[];
+  startTime: number;
+  endTime: number;
+}) {
+  return axios.post('/api/taskInfo/getDoneTaskAnalysis', {
+    ...data,
+  });
+}

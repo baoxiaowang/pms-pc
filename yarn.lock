@@ -1931,6 +1931,16 @@ character-reference-invalid@^1.0.0:
   resolved "https://registry.npmmirror.com/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz#083329cda0eae272ab3dbbf37e9a382c13af1560"
   integrity sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==
 
+chinese-calendar@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmmirror.com/chinese-calendar/-/chinese-calendar-1.0.3.tgz#be6035c5012a0aad56436cd4aee3d5cd9693a692"
+  integrity sha512-l1biPL0iAZYhgggJCOru23C+9aaXIXtz1PUgh6Xad6PwiNVl53FI9gtG5ufduoclJvjRBIGowQMyOjuj1Ep/MA==
+
+chinese-workday@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.npmmirror.com/chinese-workday/-/chinese-workday-1.9.0.tgz#951bfbcce85c775cd74c88d711f9cff07a111144"
+  integrity sha512-qXxFBFpMQzCaHOBs4VnVEVnTySWkCfxE/1fSbibtrJIB+qnjioDrjgQtXAzCvaqKndhYKS6PVl4BPtv/gMCO+w==
+
 chokidar@^3.5.3:
   version "3.5.3"
   resolved "https://registry.npmmirror.com/chokidar/-/chokidar-3.5.3.tgz#1cf37c8707b932bd1af1ae22c0432e2acd1903bd"

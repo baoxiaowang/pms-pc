@@ -8,9 +8,12 @@
 </template>
 
 <script lang="ts" setup>
+  import { use } from 'echarts/core';
   import { ref, nextTick } from 'vue';
   import VCharts from 'vue-echarts';
-  import { TitleComponent } from 'echarts/components';
+  import { TitleComponent, ToolboxComponent } from 'echarts/components';
+
+  use([ToolboxComponent, TitleComponent]);
   // import { useAppStore } from '@/store';
 
   defineProps({

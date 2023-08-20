@@ -12,15 +12,15 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.onlineContent')"
-          :value="373.5"
-          :precision="1"
+          title="我负责的项目"
+          :value="10"
+          :precision="0"
           :value-from="0"
           animation
           show-group-separator
         >
           <template #suffix>
-            W+ <span class="unit">{{ $t('workplace.pecs') }}</span>
+            <span class="unit">{{ $t('workplace.pecs') }}</span>
           </template>
         </a-statistic>
       </a-space>
@@ -37,8 +37,8 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.putIn')"
-          :value="368"
+          title="我进行中的任务"
+          :value="30"
           :value-from="0"
           animation
           show-group-separator
@@ -61,15 +61,13 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.newDay')"
-          :value="8874"
+          title="我延期的任务"
+          :value="2"
+          :precision="0"
           :value-from="0"
           animation
-          show-group-separator
         >
-          <template #suffix>
-            <span class="unit">{{ $t('workplace.pecs') }}</span>
-          </template>
+          <template #suffix> 个 </template>
         </a-statistic>
       </a-space>
     </a-grid-item>
@@ -86,13 +84,15 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.newFromYesterday')"
-          :value="2.8"
-          :precision="1"
+          title="我未完成总工时"
+          :value="50"
           :value-from="0"
           animation
+          show-group-separator
         >
-          <template #suffix> % <icon-caret-up class="up-icon" /> </template>
+          <template #suffix>
+            <span class="unit">H</span>
+          </template>
         </a-statistic>
       </a-space>
     </a-grid-item>

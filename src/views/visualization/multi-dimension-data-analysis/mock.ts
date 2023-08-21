@@ -4,7 +4,7 @@ import { PostData } from '@/types/global';
 
 setupMock({
   setup() {
-    Mock.mock(new RegExp('/api/data-chain-growth'), (params: PostData) => {
+    Mock.mock(new RegExp('/pms/data-chain-growth'), (params: PostData) => {
       const { quota } = JSON.parse(params.body);
       const getLineData = () => {
         return {
@@ -24,7 +24,7 @@ setupMock({
       });
     });
     // v2
-    Mock.mock(new RegExp('/api/data-overview'), () => {
+    Mock.mock(new RegExp('/pms/data-overview'), () => {
       const generateLineData = (name: string) => {
         return {
           name,

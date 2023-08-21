@@ -3,7 +3,7 @@ import setupMock, { successResponseWrap } from '@/utils/setup-mock';
 
 setupMock({
   setup() {
-    Mock.mock(new RegExp('/api/profile/basic'), () => {
+    Mock.mock(new RegExp('/pms/profile/basic'), () => {
       return successResponseWrap({
         status: 2,
         video: {
@@ -36,7 +36,7 @@ setupMock({
         },
       });
     });
-    Mock.mock(new RegExp('/api/operation/log'), () => {
+    Mock.mock(new RegExp('/pms/operation/log'), () => {
       return successResponseWrap([
         {
           key: '1',

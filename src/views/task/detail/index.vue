@@ -361,6 +361,9 @@
   async function addTaskInfo() {
     //
     taskInfoModalVisible.value = true;
+    taskInfoForm.name = '';
+    taskInfoForm.desc = '';
+    taskInfoForm.implementer = `${userStore.id}`;
   }
   async function sendCreateTaskInfo() {
     //

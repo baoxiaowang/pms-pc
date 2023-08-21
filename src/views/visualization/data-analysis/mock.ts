@@ -5,7 +5,7 @@ import { PostData } from '@/types/global';
 setupMock({
   setup() {
     Mock.mock(
-      new RegExp('/api/public-opinion-analysis'),
+      new RegExp('/pms/public-opinion-analysis'),
       (params: PostData) => {
         const { quota = 'visitors' } = JSON.parse(params.body);
         if (['visitors', 'comment'].includes(quota)) {
@@ -51,7 +51,7 @@ setupMock({
       }
     );
 
-    Mock.mock(new RegExp('/api/content-period-analysis'), () => {
+    Mock.mock(new RegExp('/pms/content-period-analysis'), () => {
       const getLineData = (name: string) => {
         return {
           name,
@@ -68,7 +68,7 @@ setupMock({
       });
     });
 
-    Mock.mock(new RegExp('/api/content-publish'), () => {
+    Mock.mock(new RegExp('/pms/content-publish'), () => {
       const generateLineData = (name: string) => {
         const result = {
           name,
@@ -88,7 +88,7 @@ setupMock({
       ]);
     });
 
-    Mock.mock(new RegExp('/api/popular-author/list'), () => {
+    Mock.mock(new RegExp('/pms/popular-author/list'), () => {
       const generateData = () => {
         const list = new Array(7).fill(0).map((_item, index) => ({
           ranking: index + 1,

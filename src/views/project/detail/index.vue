@@ -125,7 +125,12 @@
                   </a-tag>
                 </template>
               </a-table-column>
-              <a-table-column :width="220" title="jira 地址" data-index="jira">
+              <a-table-column
+                :ellipsis="true"
+                :width="220"
+                title="jira 地址"
+                data-index="jira"
+              >
                 <template #cell="{ record }">
                   <a-link
                     v-if="record.jira"
@@ -137,7 +142,12 @@
                   </a-link>
                 </template>
               </a-table-column>
-              <a-table-column :width="220" title="prd 地址" data-index="prd">
+              <a-table-column
+                :ellipsis="true"
+                :width="220"
+                title="prd 地址"
+                data-index="prd"
+              >
                 <template #cell="{ record }">
                   <a-link
                     v-if="record.prd"
@@ -284,7 +294,7 @@
         asterisk-position="end"
         required
         field="prd"
-        label="prd  地址"
+        :ellipsis="true"
       >
         <a-input v-model="taskForm.prd">
           <template #suffix>

@@ -63,12 +63,12 @@ setupMock({
     // });
 
     // 登出
-    Mock.mock(new RegExp('/api/user/logout'), () => {
+    Mock.mock(new RegExp('/pms/user/logout'), () => {
       return successResponseWrap(null);
     });
 
     // 用户的服务端菜单
-    Mock.mock(new RegExp('/api/user/menu'), () => {
+    Mock.mock(new RegExp('/pms/user/menu'), () => {
       const menuList = [
         {
           path: '/dashboard',

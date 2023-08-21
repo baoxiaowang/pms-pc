@@ -3,7 +3,7 @@
     <a-card class="general-card" :header-style="{ paddingBottom: '14px' }">
       <template #title> 需求人天分析 </template>
       <template #extra>
-        <a-link>{{ $t('workplace.viewMore') }}</a-link>
+        <a-link @click="goTaskDetail">{{ $t('workplace.viewMore') }}</a-link>
       </template>
       <Chart style="width: 100%; height: 347px" :option="chartOption" />
     </a-card>
@@ -22,6 +22,7 @@
   import { EChartsOption } from 'echarts';
   import dayjs, { Dayjs } from 'dayjs';
   import WorkDay from 'chinese-workday';
+  import router from '@/router';
 
   (window as any).dayjs = dayjs;
   // (window as any).ww = WorkDay;
@@ -125,17 +126,23 @@
   const textChartsData = ref<number[]>([]);
   const imgChartsData = ref<number[]>([]);
   const videoChartsData = ref<number[]>([]);
-  const today = dayjs(dayjs().format('YYYY-MM-DD 00:00:00'));
-  const todayString = today.format('YYYY-MM-DD HH:mm:ss');
+  // const today = dayjs(dayjs().format('YYYY-MM-DD 00:00:00'));
+
+  const today = computed(() => {
+    const startTime = Object.keys(developerMap.value).reduce((min, key) => {
+      const item = developerMap.value[key];
+      return Math.min(item.startDate, min);
+    }, +dayjs(dayjs().format('YYYY-MM-DD 00:00:00')));
+    return dayjs(startTime);
+  });
+  const todayString = today.value.format('YYYY-MM-DD HH:mm:ss');
+  console.log('todayString', todayString);
 
   // const developerMap = computed(() => {
   //   return props.taskDetail.developerMap || {};
   // });
   const { chartOption } = useChartOption((isDark) => {
     return {
-      title: {
-        text: 'Accumulated Waterfall Chart',
-      },
       tooltip: {
         trigger: 'item',
         axisPointer: {
@@ -202,9 +209,14 @@
         interval: 8,
         axisLabel: {
           formatter(value, index) {
-            return today.add(value / 8, 'day').format('YYYY-MM-DD');
+            return (
+              today.value
+                .add(value / 8, 'day')
+                // .subtract(3, 'day')
+                .format('YY-MM-DD')
+            );
           },
-          rotate: -60,
+          // rotate: -60,
         },
         axisPointer: {
           show: true,
@@ -212,7 +224,9 @@
             show: true,
             formatter({ value }: any) {
               // 假设此轴的 type 为 'time'。
-              return today.add(value / 8, 'day').format('YYYY-MM-DD hh:mm');
+              return today.value
+                .add(value / 8, 'day')
+                .format('YYYY-MM-DD hh:mm');
             },
           },
         },
@@ -240,7 +254,7 @@
             const devMap = props.taskDetail.developerMap || {};
             if (devMap[item.id]) {
               const { startDate } = devMap[item.id];
-              return ((startDate - +today) / (1000 * 60 * 60 * 24)) * 8;
+              return ((startDate - +today.value) / (1000 * 60 * 60 * 24)) * 8;
             }
             return 0;
 
@@ -253,6 +267,7 @@
             if (index === i) {
               const startDay = developerMap.value[item.id]?.startDate || today;
               const inputRatio = developerMap.value[item.id]?.inputRatio || 100;
+              debugger;
               const noWorkDaySum = calcWorkday(
                 startDay,
                 implementerInfoSum.value[item.id] / 8 / (inputRatio / 100)
@@ -271,6 +286,9 @@
             label: {
               show: true,
               position: 'top',
+            },
+            labelLine: {
+              show: true,
             },
             data,
           };
@@ -327,6 +345,14 @@
       setLoading(false);
     }
   };
+  function goTaskDetail() {
+    router.push({
+      name: 'taskDetail',
+      params: {
+        id: props.taskId,
+      },
+    });
+  }
   fetchData();
 </script>
 

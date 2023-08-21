@@ -270,6 +270,17 @@
               color: isDark ? '#3F3F3F' : '#E5E6EB',
             },
           },
+          // axisPointer: {
+          //   show: true,
+          //   snap: true,
+          //   label: {
+          //     show: true,
+          //     // formatter({ value }: any) {
+          //     //   // 假设此轴的 type 为 'time'。
+          //     //   return today.add(value / 8, 'day').format('YYYY-MM-DD hh:mm');
+          //     // },
+          //   },
+          // },
         },
       ],
       series: [
@@ -300,6 +311,7 @@
             type: 'bar',
             // stack: 'task',
             // label: labelOption,
+            barMaxWidth: 80,
             emphasis: {
               focus: 'series',
             },

@@ -7,7 +7,7 @@ const USER: AppRouteRecordRaw = {
   component: DEFAULT_LAYOUT,
   meta: {
     locale: '数据分析',
-    icon: 'icon-user',
+    icon: 'icon-bar-chart',
     requiresAuth: true,
     order: 6,
   },

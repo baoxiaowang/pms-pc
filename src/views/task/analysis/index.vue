@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['任务管理', '任务分析']" />
+    <Breadcrumb :items="['任务管理', taskDetail?.name || '']" />
     <a-space direction="vertical" :size="12" fill>
       <a-space direction="vertical" :size="16" fill>
         <div class="space-unit">

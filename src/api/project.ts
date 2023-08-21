@@ -8,7 +8,7 @@ export function createProject(data: {
   beUser?: string;
   envLink?: string;
 }) {
-  return axios.post('/api/project/add', {
+  return axios.post('/project/add', {
     ...data,
   });
 }
@@ -23,7 +23,7 @@ export function updateProjectById(
     envLink?: string;
   }
 ) {
-  return axios.post('/api/project/updateById', {
+  return axios.post('/project/updateById', {
     ...data,
     id,
   });
@@ -37,13 +37,13 @@ export function addCodeStoreById(data: {
     mainBranch: string;
   };
 }) {
-  return axios.post('/api/project/addCodeStoreById', {
+  return axios.post('/project/addCodeStoreById', {
     ...data,
   });
 }
 
 export function getProjectById(projectId: string) {
-  return axios.get('/api/project/getById', {
+  return axios.get('/project/getById', {
     params: {
       projectId,
     },
@@ -51,7 +51,7 @@ export function getProjectById(projectId: string) {
 }
 
 export function getProjectPageList() {
-  return axios.get('/api/project/get', {
+  return axios.get('/project/get', {
     params: {},
   });
 }

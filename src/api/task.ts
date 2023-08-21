@@ -10,7 +10,7 @@ export function createTask(data: {
   feUserList?: string[];
   beUserList?: string[];
 }) {
-  return axios.post('/api/task/add', {
+  return axios.post('/task/add', {
     ...data,
   });
 }
@@ -26,14 +26,14 @@ export function updateTaskById(
     beUserList?: string[];
   }
 ) {
-  return axios.post('/api/task/updateById', {
+  return axios.post('/task/updateById', {
     ...data,
     id,
   });
 }
 
 export function getTaskByPage({ projectId }: { projectId: string }) {
-  return axios.get('/api/task/get', {
+  return axios.get('/task/get', {
     params: {
       projectId,
     },
@@ -41,7 +41,7 @@ export function getTaskByPage({ projectId }: { projectId: string }) {
 }
 
 export function getByProjectId({ projectId }: { projectId: string }) {
-  return axios.get('/api/task/getByProjectId', {
+  return axios.get('/task/getByProjectId', {
     params: {
       projectId,
     },
@@ -49,7 +49,7 @@ export function getByProjectId({ projectId }: { projectId: string }) {
 }
 
 export function getTaskById(projectId: string) {
-  return axios.get('/api/task/getById', {
+  return axios.get('/task/getById', {
     params: {
       projectId,
     },
@@ -57,7 +57,7 @@ export function getTaskById(projectId: string) {
 }
 
 export function getByDevId(devId: string) {
-  return axios.get('/api/task/getByDevId', {
+  return axios.get('/task/getByDevId', {
     params: {
       devId,
     },
@@ -65,7 +65,7 @@ export function getByDevId(devId: string) {
 }
 
 export function deleteTaskById(taskId: string) {
-  return axios.get('/api/task/deleteById', {
+  return axios.get('/task/deleteById', {
     params: {
       taskId,
     },
@@ -73,7 +73,7 @@ export function deleteTaskById(taskId: string) {
 }
 
 export function pmConfirmed(taskId: string) {
-  return axios.post('/api/task/pmConfirmed', {
+  return axios.post('/task/pmConfirmed', {
     taskId,
   });
 }
@@ -85,20 +85,20 @@ export function devConfirmed(
     inputRatio: number;
   }
 ) {
-  return axios.post('/api/task/devConfirm', {
+  return axios.post('/task/devConfirm', {
     taskId,
     ...data,
   });
 }
 
 export function startDev(taskId: string) {
-  return axios.post('/api/task/startDev', {
+  return axios.post('/task/startDev', {
     taskId,
   });
 }
 
 export function devDone(taskId: string) {
-  return axios.post('/api/task/devDone', {
+  return axios.post('/task/devDone', {
     taskId,
   });
 }

@@ -9,13 +9,13 @@ export function createTaskInfo(data: {
   implementer: string;
   status?: 'todo' | 'doing' | 'done';
 }) {
-  return axios.post('/api/taskInfo/add', {
+  return axios.post('/taskInfo/add', {
     ...data,
   });
 }
 
 export function getTaskInfoById(taskId: string) {
-  return axios.get('/api/taskInfo/getById', {
+  return axios.get('/taskInfo/getById', {
     params: {
       taskId,
     },
@@ -31,14 +31,14 @@ export function updateTaskInfoById(
     status?: 'todo' | 'doing' | 'done';
   }
 ) {
-  return axios.post('/api/taskInfo/updateById', {
+  return axios.post('/taskInfo/updateById', {
     id,
     ...doc,
   });
 }
 
 export function getTaskInfoByTaskId(taskId: string) {
-  return axios.get('/api/taskInfo/getByTaskId', {
+  return axios.get('/taskInfo/getByTaskId', {
     params: {
       taskId,
     },
@@ -50,7 +50,7 @@ export function getDoneTaskAnalysis(data: {
   startTime: number;
   endTime: number;
 }) {
-  return axios.post('/api/taskInfo/getDoneTaskAnalysis', {
+  return axios.post('/taskInfo/getDoneTaskAnalysis', {
     ...data,
   });
 }

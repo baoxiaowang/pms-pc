@@ -12,7 +12,7 @@ export default mergeConfig(
       },
       host: '0.0.0.0',
       proxy: {
-        '/api': {
+        '/pms': {
           // target: 'https://neeko-design.com', // 接口基地址
           target: 'http://127.0.0.1:7001',
           changeOrigin: true,

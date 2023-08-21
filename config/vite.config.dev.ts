@@ -14,7 +14,7 @@ export default mergeConfig(
       proxy: {
         '/pms': {
           // target: 'https://neeko-design.com', // 接口基地址
-          target: 'http://127.0.0.1:7001',
+          target: 'http://127.0.0.1:7007',
           changeOrigin: true,
           // rewrite: (path) => path.replace(/^\/api/, '/api'),
           // rewrite: (path) => {

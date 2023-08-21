@@ -208,7 +208,7 @@
         minInterval: 8,
         interval: 8,
         axisLabel: {
-          formatter(value, index) {
+          formatter(value: any) {
             return (
               today.value
                 .add(value / 8, 'day')

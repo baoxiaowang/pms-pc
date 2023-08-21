@@ -261,7 +261,7 @@
           color: '#86909C',
           axisLabel: {
             show: 'true',
-            formatter(value, index) {
+            formatter(value: any) {
               return `${value}H`;
             },
           },

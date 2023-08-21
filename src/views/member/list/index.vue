@@ -45,7 +45,7 @@
       dataIndex: 'address',
     },
   ];
-  const tableData = ref([]);
+  const tableData = ref<any[]>([]);
   async function fetchTable() {
     const data = await getMemberByPage();
     tableData.value = data.data.list;

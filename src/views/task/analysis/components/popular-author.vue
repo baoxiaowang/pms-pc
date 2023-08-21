@@ -100,7 +100,7 @@
           type: 'value',
           axisLabel: {
             show: 'true',
-            formatter(value, index) {
+            formatter(value: any) {
               return `${value / 8}人/天`;
             },
           },

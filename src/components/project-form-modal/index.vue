@@ -3,9 +3,14 @@
     <a-modal
       v-model:visible="projectModalVisible"
       title="新建项目"
-      @ok="sendCreateModal"
+      @before-ok="sendCreateModal"
     >
-      <a-form auto-label-width :model="projectForm" label-align="left">
+      <a-form
+        ref="projectFormRef"
+        auto-label-width
+        :model="projectForm"
+        label-align="left"
+      >
         <a-form-item
           asterisk-position="end"
           required
@@ -97,9 +102,14 @@
       }
     }
   );
-
-  function sendCreateModal() {
-    emit('confirm', projectForm.value);
+  const projectFormRef = ref();
+  function sendCreateModal(done: any) {
+    projectFormRef.value.validate(async (error: any) => {
+      if (!error) {
+        emit('confirm', projectForm.value);
+        done(true);
+      }
+    });
   }
 </script>
 

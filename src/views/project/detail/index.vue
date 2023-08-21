@@ -62,6 +62,7 @@
             :key="store.name"
             :span="8"
             class="code-store-item"
+            @click="editorCodeStore(store)"
           >
             <a-space direction="vertical" fill>
               <div>仓库名：{{ store.storeName }}</div>
@@ -255,9 +256,9 @@
   <a-modal
     v-model:visible="taskModalVisible"
     :title="currentTask ? '编辑任务' : '创建任务'"
-    @ok="sendCreateRequireModal"
+    @before-ok="sendCreateRequireModal"
   >
-    <a-form :model="taskForm" label-align="left">
+    <a-form ref="taskFormRef" :model="taskForm" label-align="left">
       <a-form-item
         asterisk-position="end"
         required
@@ -294,6 +295,7 @@
         asterisk-position="end"
         required
         field="prd"
+        label="prd  地址"
         :ellipsis="true"
       >
         <a-input v-model="taskForm.prd">
@@ -359,7 +361,7 @@
     bug: 'bug',
     other: '其他',
   };
-  const codeStoreForm = reactive({
+  const codeStoreForm = reactive<any>({
     storeName: '',
     storeAddress: '',
     mainBranch: '',
@@ -392,6 +394,13 @@
   };
 
   const addCodeStore = () => {
+    codeStoreModalVisible.value = true;
+  };
+
+  const editorCodeStore = (item: any) => {
+    Object.keys(codeStoreForm).forEach((key: any) => {
+      codeStoreForm[key] = item[key];
+    });
     codeStoreModalVisible.value = true;
   };
 
@@ -457,21 +466,27 @@
     });
   }
 
-  const sendCreateRequireModal = async () => {
+  const taskFormRef = ref<any>();
+  const sendCreateRequireModal = (done: any) => {
     //
-    if (currentTask.value) {
-      // eslint-disable-next-line no-underscore-dangle
-      await updateTaskById(currentTask.value._id, {
-        ...taskForm,
-      });
-    } else {
-      await createTask({
-        projectId,
-        ...taskForm,
-      });
-    }
+    taskFormRef.value.validate(async (erro: any) => {
+      if (!erro) {
+        if (currentTask.value) {
+          // eslint-disable-next-line no-underscore-dangle
+          await updateTaskById(currentTask.value._id, {
+            ...taskForm,
+          });
+        } else {
+          await createTask({
+            projectId,
+            ...taskForm,
+          });
+        }
 
-    fetchTaskList();
+        fetchTaskList();
+        done(true);
+      }
+    });
   };
 
   async function deleteTask(row: any) {

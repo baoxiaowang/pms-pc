@@ -29,6 +29,7 @@ export function updateTaskInfoById(
     time?: number;
     desc?: string;
     status?: 'todo' | 'doing' | 'done';
+    confirmed?: boolean;
   }
 ) {
   return axios.post('/taskInfo/updateById', {

@@ -109,6 +109,7 @@
                 <div
                   v-if="currentCheckImplementer.includes(item.implementer)"
                   class="task-info-item"
+                  @click="editorTaskInfo(item)"
                 >
                   <div class="task-info-item-left">
                     <div class="task-info-name">
@@ -186,10 +187,16 @@
   </div>
   <a-modal
     v-model:visible="taskInfoModalVisible"
-    title="创建任务明细"
-    @ok="sendCreateTaskInfo"
+    :title="taskInfoForm.id ? '修改任务明细' : '创建任务明细'"
+    :on-before-ok="sendCreateTaskInfo"
+    unmount-on-close
   >
-    <a-form auto-label-width :model="taskInfoForm" label-align="left">
+    <a-form
+      ref="taskInfoFormRef"
+      auto-label-width
+      :model="taskInfoForm"
+      label-align="left"
+    >
       <a-form-item asterisk-position="end" required field="name" label="名称">
         <a-input v-model="taskInfoForm.name" placeholder="请输入" />
       </a-form-item>
@@ -341,6 +348,7 @@
   });
 
   const taskInfoForm = reactive({
+    id: '',
     taskId,
     name: '',
     desc: '',
@@ -361,17 +369,49 @@
   async function addTaskInfo() {
     //
     taskInfoModalVisible.value = true;
+    taskInfoForm.id = '';
     taskInfoForm.name = '';
     taskInfoForm.desc = '';
     taskInfoForm.implementer = `${userStore.id}`;
   }
-  async function sendCreateTaskInfo() {
+  const currentTaskInfo = ref<any>({});
+  function editorTaskInfo(item: any) {
     //
-    await createTaskInfo({
-      ...taskInfoForm,
-      taskId,
+    currentTaskInfo.value = item;
+    debugger;
+    // eslint-disable-next-line no-underscore-dangle
+    taskInfoForm.id = item.id || item._id;
+    taskInfoForm.name = item.name;
+    taskInfoForm.time = item.time;
+    taskInfoForm.desc = item.desc;
+    taskInfoForm.implementer = item.implementer;
+    taskInfoModalVisible.value = true;
+  }
+
+  const taskInfoFormRef = ref<any>();
+  function sendCreateTaskInfo(done: any) {
+    taskInfoFormRef.value.validate(async (err: any) => {
+      if (!err) {
+        if (taskInfoForm.id) {
+          const data: any = {};
+          if (taskInfoForm.time !== currentTaskInfo.value.time) {
+            data.confirmed = false;
+          }
+          await updateTaskInfoById(taskInfoForm.id, {
+            ...taskInfoForm,
+            ...data,
+          });
+        } else {
+          await createTaskInfo({
+            ...taskInfoForm,
+            taskId,
+          });
+        }
+        done(true);
+        fetchTaskInfoList();
+      }
+      done(false);
     });
-    fetchTaskInfoList();
   }
   function taskInfoChange(arg: any, status: 'todo' | 'doing' | 'done') {
     // eslint-disable-next-line no-underscore-dangle

@@ -22,6 +22,16 @@ const USER: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
+    {
+      path: 'todo',
+      name: 'todo',
+      component: () => import('@/views/analysis/todo/index.vue'),
+      meta: {
+        locale: '代办统计',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 

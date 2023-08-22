@@ -47,6 +47,7 @@ export function getTaskInfoByTaskId(taskId: string) {
 }
 
 export function getDoneTaskAnalysis(data: {
+  type?: 'done' | 'unDone';
   memberList: string[];
   startTime: number;
   endTime: number;

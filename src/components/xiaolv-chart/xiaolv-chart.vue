@@ -1,7 +1,13 @@
 <template>
   <div>
     <a-form label-align="left" :model="filterForm" layout="inline">
-      <a-form-item label="时间:">
+      <!-- <a-form-item label="类型:">
+        <a-radio-group v-model="filterForm.type" type="button">
+          <a-radio value="done">已完成</a-radio>
+          <a-radio value="unDone">未完成</a-radio>
+        </a-radio-group>
+      </a-form-item> -->
+      <a-form-item v-if="type === 'done'" label="时间:">
         <a-range-picker
           v-model="filterForm.date"
           value-format="timestamp"
@@ -18,8 +24,10 @@
         </User-select>
       </a-form-item>
     </a-form>
-
-    <Chart style="width: 100%; height: 400px" :option="chartOption" />
+    <Chart
+      style="width: 100%; height: 400px; margin-top: 20px"
+      :option="chartOption"
+    />
   </div>
 </template>
 
@@ -32,6 +40,14 @@
   import { getDoneTaskAnalysis } from '@/api/taskInfo';
   import { ToolTipFormatterParams } from '@/types/echarts';
 
+  const props = withDefaults(
+    defineProps<{
+      type?: 'done' | 'unDone';
+    }>(),
+    {
+      type: 'done',
+    }
+  );
   const shortcuts = [
     {
       label: '今天',
@@ -81,9 +97,11 @@
   const filterForm = reactive<{
     date: number[];
     userList: string[];
+    type: 'done' | 'unDone';
   }>({
     date: [],
     userList: [],
+    type: 'done',
   });
 
   const taskXiaolvInfoList = ref<any[]>([]);
@@ -132,6 +150,7 @@
 
   async function fetchXiaolvData() {
     const { data } = await getDoneTaskAnalysis({
+      type: props.type,
       memberList: filterForm.userList,
       startTime: +dayjs(
         dayjs(filterForm.date[0]).format('YYYY-MM-DD 00:00:00')
@@ -142,8 +161,12 @@
   }
 
   watch(filterForm, (val) => {
-    if (val.date[0] && val.userList.length) {
-      fetchXiaolvData();
+    if (val.userList.length) {
+      if (val.date[0]) {
+        fetchXiaolvData();
+      } else if (props.type === 'unDone') {
+        fetchXiaolvData();
+      }
     }
   });
 

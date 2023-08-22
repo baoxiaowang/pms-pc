@@ -1,6 +1,12 @@
+<!-- eslint-disable no-underscore-dangle -->
 <template>
   <div class="container">
-    <Breadcrumb :items="['任务管理', taskDetail?.name || '']" />
+    <Breadcrumb
+      :items="[
+        { label: `${projectDetail.name}`, click: goProject },
+        taskDetail?.name || '',
+      ]"
+    />
     <a-space direction="vertical" :size="12" fill>
       <a-space direction="vertical" :size="16" fill>
         <div class="space-unit">
@@ -37,11 +43,13 @@
   import ContentPeriodAnalysis from './components/content-period-analysis.vue';
   import TaskTimeAnalysis from './components/task-time-analysis.vue';
   import PopularAuthor from './components/popular-author.vue';
-  import { ref, onBeforeMount } from 'vue';
+  import { ref, onBeforeMount, watch } from 'vue';
   import { getTaskInfoByTaskId } from '@/api/taskInfo';
   import { useUserStore } from '@/store';
   import { useRoute } from 'vue-router';
   import { getTaskById } from '@/api/task';
+  import { getProjectById } from '@/api/project';
+  import router from '@/router';
 
   const route = useRoute();
   const taskDetail = ref<any>({});
@@ -57,6 +65,23 @@
     const { data } = await getTaskById(taskId);
     taskDetail.value = data;
   }
+  const projectDetail = ref<any>({});
+
+  function goProject() {
+    router.push({
+      name: 'projectDetail',
+      params: {
+        // eslint-disable-next-line no-underscore-dangle
+        id: projectDetail.value._id,
+      },
+    });
+  }
+  watch(taskDetail, async (val) => {
+    if (val?.projectId) {
+      const { data } = await getProjectById(val?.projectId);
+      projectDetail.value = data;
+    }
+  });
 
   onBeforeMount(() => {
     fetchTaskInfoList();

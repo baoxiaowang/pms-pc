@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['项目 A', '任务详情']" />
+    <Breadcrumb
+      :items="[
+        { label: `${projectDetail.name}`, click: goProject },
+        `${taskDetail.name}`,
+      ]"
+    />
     <div class="task-container-body">
       <a-card class="general-card" title="任务详情">
         <template #title>
@@ -260,6 +265,7 @@
 </template>
 
 <script setup lang="ts">
+  import { getProjectById } from '@/api/project';
   import { devDone, getTaskById, pmConfirmed, devConfirmed } from '@/api/task';
   import {
     createTaskInfo,
@@ -292,10 +298,27 @@
   const currentCheckImplementer = ref<string[]>([]);
 
   const taskDetail = ref<any>({});
+  const projectDetail = ref<any>({});
   const taskInfoModalVisible = ref(false);
   const taskInfoList = ref<any[]>([]);
   const developerMap = computed(() => {
     return taskDetail.value.developerMap || {};
+  });
+
+  function goProject() {
+    router.push({
+      name: 'projectDetail',
+      params: {
+        // eslint-disable-next-line no-underscore-dangle
+        id: projectDetail.value._id,
+      },
+    });
+  }
+  watch(taskDetail, async (val) => {
+    if (val?.projectId) {
+      const { data } = await getProjectById(val?.projectId);
+      projectDetail.value = data;
+    }
   });
 
   const needPmConfirm = computed(() => {

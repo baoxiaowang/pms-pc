@@ -3,6 +3,7 @@
     <a-modal
       v-model:visible="projectModalVisible"
       title="新建项目"
+      :mask-closable="false"
       @before-ok="sendCreateModal"
     >
       <a-form

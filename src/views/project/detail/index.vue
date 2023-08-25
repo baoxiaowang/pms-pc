@@ -186,6 +186,7 @@
   <!-- 项目涉及代码仓库 -->
   <a-modal
     v-model:visible="codeStoreModalVisible"
+    :mask-closable="false"
     title="项目代码仓库"
     @ok="sendCreateCodeStoreModal"
   >
@@ -255,6 +256,7 @@
   </a-modal>
   <a-modal
     v-model:visible="taskModalVisible"
+    :mask-closable="false"
     :title="currentTask ? '编辑任务' : '创建任务'"
     @before-ok="sendCreateRequireModal"
   >

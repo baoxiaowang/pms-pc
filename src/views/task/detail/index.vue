@@ -192,6 +192,7 @@
   </div>
   <a-modal
     v-model:visible="taskInfoModalVisible"
+    :mask-closable="false"
     :title="taskInfoForm.id ? '修改任务明细' : '创建任务明细'"
     :on-before-ok="sendCreateTaskInfo"
     unmount-on-close
@@ -238,6 +239,7 @@
 
   <a-modal
     v-model:visible="devConfirmVisible"
+    :mask-closable="false"
     title="开发确认"
     @ok="devConfirmOk"
   >

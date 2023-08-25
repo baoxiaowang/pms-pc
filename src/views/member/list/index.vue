@@ -10,6 +10,7 @@
   </div>
   <a-modal
     v-model:visible="memberModalVisible"
+    :mask-closable="false"
     title="创建员工"
     @ok="sendCreateModal"
   >

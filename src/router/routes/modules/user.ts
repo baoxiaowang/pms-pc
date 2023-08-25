@@ -22,16 +22,16 @@ const USER: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    {
-      path: 'setting',
-      name: 'Setting',
-      component: () => import('@/views/user/setting/index.vue'),
-      meta: {
-        locale: '信息设置',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
+    // {
+    //   path: 'setting',
+    //   name: 'Setting',
+    //   component: () => import('@/views/user/setting/index.vue'),
+    //   meta: {
+    //     locale: '信息设置',
+    //     requiresAuth: true,
+    //     roles: ['*'],
+    //   },
+    // },
     {
       path: 'calendar',
       name: 'Calendar',

@@ -10,6 +10,7 @@
   </div>
   <a-modal
     v-model:visible="codeStoreDictVisible"
+    :mask-closable="false"
     title="Modal Form"
     @ok="sendCreateModal"
   >

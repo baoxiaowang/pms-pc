@@ -21,7 +21,7 @@
         <a-col :span="7">前端负责人:</a-col>
         <a-col :span="5">{{ project.feOwnerMember?.name }}</a-col>
         <a-col :span="7">后端负责人:</a-col>
-        <a-col :span="5">黄帆</a-col>
+        <a-col :span="5">{{ project.beOwnerMember?.name }}</a-col>
       </a-row>
     </a-space>
   </a-card>

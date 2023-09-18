@@ -32,34 +32,36 @@
             <a-avatar> {{ task.projectInfo.name }} </a-avatar>
           </template>
           <template #description>
-            <a-space fill direction="vertical" size="mini">
-              <a-space fill>
-                <span :span="1">
-                  项目PM:
-                  <UserTag
-                    :id="task.projectInfo.pmMember?.id"
-                    :name="task.projectInfo.pmMember?.name"
-                  />
-                </span>
-                <span> 期望完成时间: {{ task.expectDate }} </span>
+            <div class="list-item-right">
+              <a-space fill direction="vertical" size="mini">
+                <a-space fill>
+                  <span :span="1">
+                    项目PM:
+                    <UserTag
+                      :id="task.projectInfo.pmMember?.id"
+                      :name="task.projectInfo.pmMember?.name"
+                    />
+                  </span>
+                  <span> 期望完成时间: {{ task.expectDate }} </span>
+                </a-space>
+                <a-space fill>
+                  <span :span="1">prd: </span>
+                  <span :span="20">
+                    <a-link icon target="_blank" :href="task.prd">
+                      {{ task.prd }}
+                    </a-link>
+                  </span>
+                </a-space>
+                <a-space fill>
+                  <span :span="1">jira: </span>
+                  <span :span="20">
+                    <a-link icon target="_blank" :href="task.jira">
+                      {{ task.jira }}
+                    </a-link>
+                  </span>
+                </a-space>
               </a-space>
-              <a-space fill>
-                <span :span="1">prd: </span>
-                <span :span="20">
-                  <a-link icon target="_blank" :href="task.prd">
-                    {{ task.prd }}
-                  </a-link>
-                </span>
-              </a-space>
-              <a-space fill>
-                <span :span="1">jira: </span>
-                <span :span="20">
-                  <a-link icon target="_blank" :href="task.jira">
-                    {{ task.jira }}
-                  </a-link>
-                </span>
-              </a-space>
-            </a-space>
+            </div>
           </template>
         </a-list-item-meta>
       </a-list-item>
@@ -109,6 +111,11 @@
       justify-content: space-between;
     }
   }
+  .list-item-right {
+    flex: 1;
+    width: 100%;
+    overflow-x: hidden;
+  }
   .general-card :deep(.arco-list-item) {
     padding-left: 0;
     border-bottom: none;
@@ -125,5 +132,15 @@
       padding-bottom: 20px;
       border-bottom: 1px solid var(--color-neutral-3);
     }
+  }
+</style>
+
+<style lang="less">
+  .arco-list-item-main {
+    width: 0;
+    overflow: hidden;
+  }
+  .arco-list-item-action {
+    flex-shrink: 0;
   }
 </style>

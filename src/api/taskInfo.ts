@@ -38,6 +38,12 @@ export function updateTaskInfoById(
   });
 }
 
+export function deleteTaskInfoById(id: string) {
+  return axios.post('/taskInfo/deleteById', {
+    id,
+  });
+}
+
 export function getTaskInfoByTaskId(taskId: string) {
   return axios.get('/taskInfo/getByTaskId', {
     params: {

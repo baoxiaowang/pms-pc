@@ -35,7 +35,13 @@
           <a-space>
             <a-button>转 交</a-button>
             <!-- v-if="needPmConfirm" -->
-            <a-button type="outline" @click="pmConfirm"> PM 确认 </a-button>
+            <a-button
+              v-if="taskDetail.pmMember?._id === userStore.id"
+              type="outline"
+              @click="pmConfirm"
+            >
+              PM 确认
+            </a-button>
 
             <a-button type="outline" @click="devConfirm"> 开发确认 </a-button>
 
@@ -194,7 +200,6 @@
     v-model:visible="taskInfoModalVisible"
     :mask-closable="false"
     :title="taskInfoForm.id ? '修改任务明细' : '创建任务明细'"
-    :on-before-ok="sendCreateTaskInfo"
     unmount-on-close
   >
     <a-form
@@ -235,6 +240,13 @@
         ></a-textarea>
       </a-form-item>
     </a-form>
+
+    <template #footer>
+      <a-space>
+        <a-button status="danger" @click="deleteTaskInfo">删除</a-button>
+        <a-button type="primary" @click="sendCreateTaskInfo">确认</a-button>
+      </a-space>
+    </template>
   </a-modal>
 
   <a-modal
@@ -271,13 +283,13 @@
   import { devDone, getTaskById, pmConfirmed, devConfirmed } from '@/api/task';
   import {
     createTaskInfo,
+    deleteTaskInfoById,
     getTaskInfoByTaskId,
     updateTaskInfoById,
   } from '@/api/taskInfo';
   import router from '@/router';
   import { useUserStore } from '@/store';
   import { Message, Modal } from '@arco-design/web-vue';
-  import { arrayType } from 'ant-design-vue/es/_util/type';
   import dayjs from 'dayjs';
   import { watch, computed, reactive, onBeforeMount, ref } from 'vue';
   import { useRoute } from 'vue-router';
@@ -316,6 +328,7 @@
       },
     });
   }
+
   watch(taskDetail, async (val) => {
     if (val?.projectId) {
       const { data } = await getProjectById(val?.projectId);
@@ -355,8 +368,10 @@
     const todo: any[] = [];
     const doing: any[] = [];
     const done: any[] = [];
-    // currentCheckImplementer.value = val.map((item) => item.implementer);
-    currentCheckImplementer.value = [userStore.id as string];
+    // if (!currentCheckImplementer.value.length) {
+    currentCheckImplementer.value = val.map((item) => item.implementer);
+    // }
+    // currentCheckImplementer.value = [userStore.id as string];
 
     val.forEach((item) => {
       if (item.status === 'done') {
@@ -403,7 +418,6 @@
   function editorTaskInfo(item: any) {
     //
     currentTaskInfo.value = item;
-    debugger;
     // eslint-disable-next-line no-underscore-dangle
     taskInfoForm.id = item.id || item._id;
     taskInfoForm.name = item.name;
@@ -414,7 +428,18 @@
   }
 
   const taskInfoFormRef = ref<any>();
-  function sendCreateTaskInfo(done: any) {
+  function deleteTaskInfo() {
+    taskInfoFormRef.value.validate(async (err: any) => {
+      if (!err) {
+        if (taskInfoForm.id) {
+          await deleteTaskInfoById(taskInfoForm.id);
+          taskInfoModalVisible.value = false;
+          fetchTaskInfoList();
+        }
+      }
+    });
+  }
+  function sendCreateTaskInfo() {
     taskInfoFormRef.value.validate(async (err: any) => {
       if (!err) {
         if (taskInfoForm.id) {
@@ -432,10 +457,13 @@
             taskId,
           });
         }
-        done(true);
+        // done(true);
+        taskInfoModalVisible.value = false;
         fetchTaskInfoList();
+      } else {
+        taskInfoModalVisible.value = true;
       }
-      done(false);
+      // done(false);
     });
   }
   function taskInfoChange(arg: any, status: 'todo' | 'doing' | 'done') {

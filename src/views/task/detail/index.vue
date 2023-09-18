@@ -116,34 +116,34 @@
               item-key="id"
               @add="(arg) => taskInfoChange(arg, item as any)"
             >
-              <template #item="{ element: item }">
+              <template #item="{ element: info }">
                 <div
-                  v-if="currentCheckImplementer.includes(item.implementer)"
+                  v-if="currentCheckImplementer.includes(info.implementer)"
                   class="task-info-item"
-                  @click="editorTaskInfo(item)"
+                  @click="editorTaskInfo(info)"
                 >
                   <div class="task-info-item-left">
                     <div class="task-info-name">
-                      {{ item.name }}
+                      {{ info.name }}
                       <a-tag
                         :color="
-                          item.confirmed
+                          info.confirmed
                             ? 'rgb(var(--green-6))'
                             : 'var(--color-neutral-4)'
                         "
                         size="small"
                       >
-                        {{ item.confirmed ? '已确认' : '未确认' }}
+                        {{ info.confirmed ? '已确认' : '未确认' }}
                       </a-tag>
                     </div>
-                    <div class="task-info-desc"> {{ item.desc }}</div>
+                    <div class="task-info-desc"> {{ info.desc }}</div>
                   </div>
                   <div class="task-info-item-right">
-                    <div class="task-info-item-time"> {{ item.time }}h </div>
+                    <div class="task-info-item-time"> {{ info.time }}h </div>
                     <div class="">
                       <UserTag
-                        :id="item.implementerInfo.id"
-                        :name="item.implementerInfo.name"
+                        :id="info.implementerInfo.id"
+                        :name="info.implementerInfo.name"
                       ></UserTag>
                     </div>
                   </div>
